@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 import Header from './components/Header';
-import ListItem from './components/ListItem';
+import SearchBar from './components/SearchBar';
 import AddItem from './components/AddItem';
+import ListItem from './components/ListItem';
 
 const App = () => {
   const [items, setItems] = useState([
@@ -12,6 +13,8 @@ const App = () => {
     {id: uuidv4(), text: 'Bread' },
     {id: uuidv4(), text: 'Juice' }
   ]);
+
+  const [text, setText] = useState('Hola Papi!');
 
   const deleteItem = (id) => {
     setItems(prevItems => {
@@ -29,14 +32,21 @@ const App = () => {
     }
   }
 
+  const addText = (valor) => {
+    // setText(e.target.value)
+    setText(valor)
+  }
+
   return (
     <View style={styles.container}>
       <Header />
-      <AddItem addItem={addItem} />
+      <SearchBar holaMierda={addText} />
       <FlatList 
       data={items} 
       renderItem={({item}) => <ListItem item={item} deleteItem={deleteItem} />}
       />
+      <AddItem addItem={addItem} />
+      <Text style={styles.text}>{text}</Text>
     </View>
   );
 };
@@ -44,6 +54,9 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+  text: {
+    textAlign: 'center'
   }
 });
 
