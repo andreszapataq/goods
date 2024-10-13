@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { PlusCircle, Edit2, Check, X, Trash2, AlertCircle, Search } from "lucide-react"
+import { supabase } from "@/utils/supabase" // Importar el cliente de Supabase
 
 type Item = {
   id: string
@@ -74,6 +75,29 @@ export function App() {
   useEffect(() => {
     setSearchResults(searchItems())
   }, [searchItems])
+
+  useEffect(() => {
+    const fetchBoxes = async () => {
+      const { data, error } = await supabase
+        .from('boxes')
+        .select(`
+          *,
+          items (
+            id,
+            name,
+            description
+          )
+        `);
+
+      if (error) {
+        console.error('Error fetching boxes:', error);
+      } else {
+        setBoxes(data); // Establecer las cajas obtenidas con sus items
+      }
+    };
+
+    fetchBoxes(); // Llamar a la función para obtener las cajas
+  }, []); // Ejecutar solo una vez al montar el componente
 
   const addBox = () => {
     const trimmedName = newBoxName.trim()
