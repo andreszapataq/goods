@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, KeyboardEvent, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,14 +14,17 @@ type Item = {
   id: string
   name: string
   description: string
+  box_id: string
+  created_at: string
 }
 
 type Box = {
   id: string
   name: string
   description: string
-  items: Item[]
-  itemCount: number
+  created_at: string
+  item_count: number
+  items?: Item[]
 }
 
 type SearchResult = {
@@ -57,68 +60,37 @@ export function App() {
   const [isDeleteItemDialogOpen, setIsDeleteItemDialogOpen] = useState(false)
   const [itemToDelete, setItemToDelete] = useState<Item | null>(null)
 
-  const searchItems = useCallback(() => {
-    return boxes.flatMap(box => 
-      box.items
-        .filter(item => 
-          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.description.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        .map(item => ({
-          item,
-          boxId: box.id,
-          boxName: box.name
-        }))
-    )
-  }, [boxes, searchTerm])
-
   useEffect(() => {
-    setSearchResults(searchItems())
-  }, [searchItems])
+    fetchBoxes()
+  }, [])
 
-  useEffect(() => {
-    const fetchBoxes = async () => {
-      const { data, error } = await supabase
-        .from('boxes')
-        .select(`
-          *,
-          items (
-            id,
-            name,
-            description
-          )
-        `);
+  const fetchBoxes = async () => {
+    const { data, error } = await supabase
+      .from('boxes')
+      .select('*')
+      .order('created_at', { ascending: false })
+    if (error) console.error('Error fetching boxes:', error)
+    else setBoxes(data || [])
+  }
 
-      if (error) {
-        console.error('Error fetching boxes:', error);
-      } else {
-        setBoxes(data); // Establecer las cajas obtenidas con sus items
-      }
-    };
-
-    fetchBoxes(); // Llamar a la función para obtener las cajas
-  }, []); // Ejecutar solo una vez al montar el componente
-
-  const addBox = () => {
+  const addBox = async () => {
     const trimmedName = newBoxName.trim()
     if (trimmedName) {
-      if (boxes.some(box => box.name.trim().toLowerCase() === trimmedName.toLowerCase())) {
-        setNewBoxNameError('Ya existe una caja con este nombre.')
+      const { data, error } = await supabase
+        .from('boxes')
+        .insert({ name: trimmedName, description: newBoxDescription.trim() })
+        .select()
+      if (error) {
+        console.error('Error adding box:', error)
+        setNewBoxNameError('Error adding box. Please try again.')
       } else {
-        const newBox: Box = {
-          id: Date.now().toString(),
-          name: trimmedName,
-          description: newBoxDescription.trim(),
-          items: [],
-          itemCount: 0
-        }
-        setBoxes([...boxes, newBox])
+        setBoxes([...(data || []), ...boxes])
         setNewBoxName('')
         setNewBoxDescription('')
         setNewBoxNameError('')
       }
     } else {
-      setNewBoxNameError('Por favor, ingrese un nombre para la caja.')
+      setNewBoxNameError('Please enter a name for the box.')
     }
   }
 
@@ -127,11 +99,19 @@ export function App() {
     setIsDeleteDialogOpen(true)
   }
 
-  const confirmDeleteBox = () => {
+  const confirmDeleteBox = async () => {
     if (boxToDelete) {
-      setBoxes(boxes.filter(b => b.id !== boxToDelete.id))
-      setIsDeleteDialogOpen(false)
-      setBoxToDelete(null)
+      const { error } = await supabase
+        .from('boxes')
+        .delete()
+        .eq('id', boxToDelete.id)
+      if (error) {
+        console.error('Error deleting box:', error)
+      } else {
+        setBoxes(boxes.filter(b => b.id !== boxToDelete.id))
+        setIsDeleteDialogOpen(false)
+        setBoxToDelete(null)
+      }
     }
   }
 
@@ -142,23 +122,27 @@ export function App() {
     setEditBoxNameError('')
   }
 
-  const saveEditBox = () => {
+  const saveEditBox = async () => {
     if (editingBox) {
       const trimmedName = editBoxName.trim()
       if (trimmedName) {
-        if (boxes.some(box => box.id !== editingBox && box.name.trim().toLowerCase() === trimmedName.toLowerCase())) {
-          setEditBoxNameError('Ya existe una caja con este nombre.')
+        const { data, error } = await supabase
+          .from('boxes')
+          .update({ name: trimmedName, description: editBoxDescription.trim() })
+          .eq('id', editingBox)
+          .select()
+        if (error) {
+          console.error('Error updating box:', error)
+          setEditBoxNameError('Error updating box. Please try again.')
         } else {
           setBoxes(boxes.map(box => 
-            box.id === editingBox
-              ? { ...box, name: trimmedName, description: editBoxDescription.trim() }
-              : box
+            box.id === editingBox ? (data && data[0] ? data[0] : box) : box
           ))
           setEditingBox(null)
           setEditBoxNameError('')
         }
       } else {
-        setEditBoxNameError('El nombre de la caja no puede estar vacío.')
+        setEditBoxNameError('Box name cannot be empty.')
       }
     }
   }
@@ -168,37 +152,83 @@ export function App() {
     setEditBoxNameError('')
   }
 
-  const addItem = () => {
+  const addItem = async () => {
     if (activeBox && newItemName.trim()) {
-      const newItem: Item = {
-        id: Date.now().toString(),
-        name: newItemName.trim(),
-        description: newItemDescription.trim()
+      const { error } = await supabase
+        .from('items')
+        .insert({
+          name: newItemName.trim(),
+          description: newItemDescription.trim(),
+          box_id: activeBox.id
+        })
+        .select()
+      if (error) {
+        console.error('Error adding item:', error)
+        setNewItemNameError('Error adding item. Please try again.')
+      } else {
+        const updatedBox = { ...activeBox, item_count: activeBox.item_count + 1 }
+        setBoxes(boxes.map(box => box.id === activeBox.id ? updatedBox : box))
+        setActiveBox(updatedBox)
+        setNewItemName('')
+        setNewItemDescription('')
+        setNewItemNameError('')
+        setIsAddingItem(false)
       }
-      const updatedBoxes = boxes.map(box => 
-        box.id === activeBox.id 
-          ? { ...box, items: [...box.items, newItem], itemCount: box.itemCount + 1 }
-          : box
-      )
-      setBoxes(updatedBoxes)
-      setActiveBox({ ...activeBox, items: [...activeBox.items, newItem], itemCount: activeBox.itemCount + 1 })
-      setNewItemName('')
-      setNewItemDescription('')
-      setNewItemNameError('')
-      setIsAddingItem(false)
     } else if (!newItemName.trim()) {
-      setNewItemNameError('Por favor, ingrese un nombre para el item.')
+      setNewItemNameError('Please enter a name for the item.')
     }
   }
 
-  const openBox = (boxId: string) => {
-    const box = boxes.find(b => b.id === boxId)
-    if (box) {
-      setActiveBox(box)
-      setIsDialogOpen(true)
-      setIsAddingItem(false)
-      setBoxSearchTerm('')
+  const searchItems = async () => {
+    if (searchTerm) {
+      const { data, error } = await supabase
+        .from('items')
+        .select('*, boxes(id, name)')
+        .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
+      if (error) {
+        console.error('Error searching items:', error)
+      } else {
+        setSearchResults(data.map((item: Item & { boxes: Box }) => ({
+          item: item,
+          boxId: item.boxes.id,
+          boxName: item.boxes.name
+        })))
+      }
+    } else {
+      setSearchResults([])
     }
+  }
+
+  useEffect(() => {
+    searchItems()
+  }, [searchTerm])
+
+  const openBox = async (boxId: string) => {
+    const { data: boxData, error: boxError } = await supabase
+      .from('boxes')
+      .select('*')
+      .eq('id', boxId)
+      .single()
+    
+    if (boxError) {
+      console.error('Error fetching box:', boxError)
+      return
+    }
+
+    const { data: itemsData, error: itemsError } = await supabase
+      .from('items')
+      .select('*')
+      .eq('box_id', boxId)
+    
+    if (itemsError) {
+      console.error('Error fetching items:', itemsError)
+      return
+    }
+
+    setActiveBox({ ...boxData, items: itemsData || [] })
+    setIsDialogOpen(true)
+    setIsAddingItem(false)
+    setBoxSearchTerm('')
   }
 
   const startEditing = (item: Item) => {
@@ -208,27 +238,28 @@ export function App() {
     setEditItemNameError('')
   }
 
-  const saveEdit = () => {
+  const saveEdit = async () => {
     if (activeBox && editingItem) {
       const trimmedName = editItemName.trim()
       if (trimmedName) {
-        const updatedBoxes = boxes.map(box => {
-          if (box.id === activeBox.id) {
-            const updatedItems = box.items.map(item => 
-              item.id === editingItem
-                ? { ...item, name: trimmedName, description: editItemDescription.trim() }
-                : item
-            )
-            return { ...box, items: updatedItems }
-          }
-          return box
-        })
-        setBoxes(updatedBoxes)
-        setActiveBox(updatedBoxes.find(box => box.id === activeBox.id) || null)
-        setEditingItem(null)
-        setEditItemNameError('')
+        const { data, error } = await supabase
+          .from('items')
+          .update({ name: trimmedName, description: editItemDescription.trim() })
+          .eq('id', editingItem)
+          .select()
+        if (error) {
+          console.error('Error updating item:', error)
+          setEditItemNameError('Error updating item. Please try again.')
+        } else {
+          const updatedItems = activeBox?.items?.map(item => 
+            item.id === editingItem ? (data && data[0] ? data[0] : item) : item
+          )
+          setActiveBox({ ...activeBox, items: updatedItems })
+          setEditingItem(null)
+          setEditItemNameError('')
+        }
       } else {
-        setEditItemNameError('El nombre del item no puede estar vacío.')
+        setEditItemNameError('Item name cannot be empty.')
       }
     }
   }
@@ -238,26 +269,22 @@ export function App() {
     setEditItemNameError('')
   }
 
-  const confirmDeleteItem = () => {
+  const confirmDeleteItem = async () => {
     if (activeBox && itemToDelete) {
-      const updatedBoxes = boxes.map(box => {
-        if (box.id === activeBox.id) {
-          const updatedItems = box.items.filter(item => item.id !== itemToDelete.id)
-          return { ...box, items: updatedItems, itemCount: updatedItems.length }
-        }
-        return box
-      })
-      setBoxes(updatedBoxes)
-      const updatedActiveBox = updatedBoxes.find(box => box.id === activeBox.id)
-      setActiveBox(updatedActiveBox || null)
-      setIsDeleteItemDialogOpen(false)
-      setItemToDelete(null)
-    }
-  }
-
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>, action: () => void) => {
-    if (e.key === 'Enter') {
-      action()
+      const { error } = await supabase
+        .from('items')
+        .delete()
+        .eq('id', itemToDelete.id)
+      if (error) {
+        console.error('Error deleting item:', error)
+      } else {
+        const updatedItems = activeBox?.items?.filter(item => item.id !== itemToDelete.id)
+        const updatedBox = { ...activeBox, items: updatedItems, item_count: activeBox.item_count - 1 }
+        setBoxes(boxes.map(box => box.id === activeBox.id ? updatedBox : box))
+        setActiveBox(updatedBox)
+        setIsDeleteItemDialogOpen(false)
+        setItemToDelete(null)
+      }
     }
   }
 
@@ -265,7 +292,7 @@ export function App() {
     setSearchTerm('')
   }
 
-  const filteredBoxItems = activeBox?.items.filter(item =>
+  const filteredBoxItems = activeBox?.items?.filter(item =>
     item.name.toLowerCase().includes(boxSearchTerm.toLowerCase()) ||
     item.description.toLowerCase().includes(boxSearchTerm.toLowerCase())
   ) || []
@@ -340,7 +367,7 @@ export function App() {
                 setNewBoxName(e.target.value)
                 setNewBoxNameError('')
               }}
-              onKeyPress={(e) => handleKeyPress(e, addBox)}
+              onKeyPress={(e) => e.key === 'Enter' && addBox()}
             />
             <Input
               type="text"
@@ -366,6 +393,7 @@ export function App() {
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{newBoxNameError}</AlertDescription>
               </Alert>
+            
             )}
           </div>
         </CardContent>
@@ -413,8 +441,7 @@ export function App() {
                 <CardTitle className="flex justify-between items-center">
                   <div>
                     {box.name}
-                    <Badge variant="secondary" className="ml-2">{box.itemCount} items</Badge>
-                  
+                    <Badge variant="secondary" className="ml-2">{box.item_count} items</Badge>
                   </div>
                   <div>
                     <Button onClick={() => startEditingBox(box)} variant="ghost" size="sm" className="mr-1">
@@ -430,12 +457,6 @@ export function App() {
             <CardContent>
               {box.description && <p className="text-sm text-gray-500 mb-2">{box.description}</p>}
               <Button onClick={() => openBox(box.id)} className="mb-2">Ver Items</Button>
-              <ul>
-                {box.items.slice(0, 3).map(item => (
-                  <li key={item.id}>{item.name}</li>
-                ))}
-                {box.items.length > 3 && <li>...</li>}
-              </ul>
             </CardContent>
           </Card>
         ))}
@@ -447,7 +468,7 @@ export function App() {
           <DialogHeader>
             <DialogTitle className="flex justify-between items-center">
               {activeBox?.name}
-              <Badge variant="secondary">{activeBox?.itemCount} items</Badge>
+              <Badge variant="secondary">{activeBox?.item_count} items</Badge>
             </DialogTitle>
             {activeBox?.description && (
               <DialogDescription>
@@ -456,7 +477,7 @@ export function App() {
             )}
           </DialogHeader>
           <div className="mt-4 space-y-4">
-            {activeBox && activeBox.items.length > 0 && (
+            {activeBox && activeBox.items && activeBox.items.length > 0 && (
               <div className="relative">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <Input
@@ -468,7 +489,7 @@ export function App() {
                 />
               </div>
             )}
-            {activeBox && activeBox.items.length > 0 ? (
+            {activeBox && activeBox.items && activeBox.items.length > 0 ? (
               <Button onClick={() => setIsAddingItem(true)} className="w-full">
                 <PlusCircle className="h-4 w-4 mr-2" />
                 Agregar Item
@@ -483,7 +504,7 @@ export function App() {
                     setNewItemName(e.target.value)
                     setNewItemNameError('')
                   }}
-                  onKeyPress={(e) => {
+                  onKeyDown={(e) => { // Cambiado de onKeyPress a onKeyDown
                     if (e.key === 'Enter' && newItemName.trim()) {
                       (document.querySelector('input[placeholder="Descripción del item"]') as HTMLInputElement)?.focus()
                     }
@@ -494,7 +515,7 @@ export function App() {
                   placeholder="Descripción del item"
                   value={newItemDescription}
                   onChange={(e) => setNewItemDescription(e.target.value)}
-                  onKeyPress={(e) => handleKeyPress(e, addItem)}
+                  onKeyDown={(e) => e.key === 'Enter' && addItem()} // Cambiado de onKeyPress a onKeyDown
                 />
                 <Button onClick={addItem} className="w-full">Agregar Primer Item</Button>
                 {newItemNameError && (
@@ -526,7 +547,7 @@ export function App() {
                   placeholder="Descripción del item"
                   value={newItemDescription}
                   onChange={(e) => setNewItemDescription(e.target.value)}
-                  onKeyPress={(e) => handleKeyPress(e, addItem)}
+                  onKeyPress={(e) => e.key === 'Enter' && addItem()}
                 />
                 <Button onClick={addItem}>Agregar Item</Button>
                 {newItemNameError && (
@@ -539,7 +560,7 @@ export function App() {
             )}
             <div className="max-h-[50vh] overflow-y-auto">
               <ul className="space-y-2">
-                {filteredBoxItems.map(item => (
+                {filteredBoxItems.map((item: Item) => (
                   <li key={item.id} className="p-2 border rounded">
                     {editingItem === item.id ? (
                       <div className="space-y-2">
@@ -550,7 +571,7 @@ export function App() {
                             setEditItemName(e.target.value)
                             setEditItemNameError('')
                           }}
-                          onKeyPress={(e) => {
+                          onKeyDown={(e) => { // Cambiado de onKeyPress a onKeyDown
                             if (e.key === 'Enter' && editItemName.trim()) {
                               (document.querySelector('input[value="' + editItemDescription + '"]') as HTMLInputElement)?.focus()
                             }
@@ -561,7 +582,7 @@ export function App() {
                           type="text"
                           value={editItemDescription}
                           onChange={(e) => setEditItemDescription(e.target.value)}
-                          onKeyPress={(e) => handleKeyPress(e, saveEdit)}
+                          onKeyDown={(e) => e.key === 'Enter' && saveEdit()} // Cambiado de onKeyPress a onKeyDown
                           placeholder={item.description || "Descripción del item"}
                         />
                         <div className="flex space-x-2">
