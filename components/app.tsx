@@ -74,23 +74,39 @@ export function App() {
   }
 
   const addBox = async () => {
-    const trimmedName = newBoxName.trim()
+    const trimmedName = newBoxName.trim();
     if (trimmedName) {
+      // Verifica si ya existe una caja con el mismo nombre
+      const { data: existingBoxes, error: fetchError } = await supabase
+        .from('boxes')
+        .select('*')
+        .eq('name', trimmedName);
+
+      if (fetchError) {
+        console.error('Error checking existing boxes:', fetchError);
+        return;
+      }
+
+      if (existingBoxes && existingBoxes.length > 0) {
+        setNewBoxNameError('Ya existe una caja con este nombre. Por favor, elige otro.');
+        return;
+      }
+
       const { data, error } = await supabase
         .from('boxes')
-        .insert({ name: trimmedName, description: newBoxDescription.trim() })
-        .select()
+        .insert({ name: trimmedName, description: newBoxDescription.trim(), item_count: 0 })
+        .select();
       if (error) {
-        console.error('Error adding box:', error)
-        setNewBoxNameError('Error adding box. Please try again.')
+        console.error('Error adding box:', error);
+        setNewBoxNameError('Error adding box. Please try again.');
       } else {
-        setBoxes([...(data || []), ...boxes])
-        setNewBoxName('')
-        setNewBoxDescription('')
-        setNewBoxNameError('')
+        setBoxes([...(data || []), ...boxes]);
+        setNewBoxName('');
+        setNewBoxDescription('');
+        setNewBoxNameError('');
       }
     } else {
-      setNewBoxNameError('Please enter a name for the box.')
+      setNewBoxNameError('Por favor, ingrese un nombre para la caja.');
     }
   }
 
@@ -154,7 +170,7 @@ export function App() {
 
   const addItem = async () => {
     if (activeBox && newItemName.trim()) {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('items')
         .insert({
           name: newItemName.trim(),
@@ -166,9 +182,20 @@ export function App() {
         console.error('Error adding item:', error)
         setNewItemNameError('Error adding item. Please try again.')
       } else {
-        const updatedBox = { ...activeBox, item_count: activeBox.item_count + 1 }
-        setBoxes(boxes.map(box => box.id === activeBox.id ? updatedBox : box))
-        setActiveBox(updatedBox)
+        // Actualiza el contador en la base de datos
+        await supabase
+          .from('boxes')
+          .update({ item_count: activeBox.item_count + 1 })
+          .eq('id', activeBox.id)
+
+        // Agrega el nuevo item a la lista de items de activeBox
+        const updatedBox = { 
+          ...activeBox, 
+          items: [...(activeBox.items || []), data[0]], // Agrega el nuevo item aquí
+          item_count: activeBox.item_count + 1 
+        }
+        setBoxes(boxes.map(box => box.id === activeBox.id ? updatedBox : box)) // Actualiza la lista de cajas
+        setActiveBox(updatedBox) // Actualiza activeBox para mostrar el nuevo item
         setNewItemName('')
         setNewItemDescription('')
         setNewItemNameError('')
@@ -279,6 +306,12 @@ export function App() {
         console.error('Error deleting item:', error)
       } else {
         const updatedItems = activeBox?.items?.filter(item => item.id !== itemToDelete.id)
+        // Actualiza el contador en la base de datos
+        await supabase
+          .from('boxes')
+          .update({ item_count: activeBox.item_count - 1 })
+          .eq('id', activeBox.id)
+
         const updatedBox = { ...activeBox, items: updatedItems, item_count: activeBox.item_count - 1 }
         setBoxes(boxes.map(box => box.id === activeBox.id ? updatedBox : box))
         setActiveBox(updatedBox)
@@ -457,6 +490,18 @@ export function App() {
             <CardContent>
               {box.description && <p className="text-sm text-gray-500 mb-2">{box.description}</p>}
               <Button onClick={() => openBox(box.id)} className="mb-2">Ver Items</Button>
+              
+              {/* Mostrar los tres primeros items */}
+              <ul className="space-y-1">
+                {box.items && box.items.slice(0, 3).map(item => (
+                  <li key={item.id} className="text-sm text-gray-700">
+                    {item.name} {item.description && `- ${item.description}`}
+                  </li>
+                ))}
+                {box.items && box.items.length > 3 && (
+                  <li className="text-sm text-gray-500">...</li> // Puntos suspensivos si hay más de 3 items
+                )}
+              </ul>
             </CardContent>
           </Card>
         ))}
@@ -634,7 +679,7 @@ export function App() {
           <DialogHeader>
             <DialogTitle>Confirmar eliminación</DialogTitle>
             <DialogDescription>
-              ¿Está seguro de que desea eliminar la caja &quot;{boxToDelete?.name}&quot;? Esta acción eliminará todos los items dentro de la caja y no se puede deshacer.
+              ��Está seguro de que desea eliminar la caja &quot;{boxToDelete?.name}&quot;? Esta acción eliminará todos los items dentro de la caja y no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
