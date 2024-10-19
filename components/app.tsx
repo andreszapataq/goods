@@ -67,10 +67,14 @@ export function App() {
   const fetchBoxes = async () => {
     const { data, error } = await supabase
       .from('boxes')
-      .select('*')
-      .order('created_at', { ascending: false })
-    if (error) console.error('Error fetching boxes:', error)
-    else setBoxes(data || [])
+      .select('*, items(*)') // Incluye los items en la consulta
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching boxes:', error);
+    } else {
+      setBoxes(data || []);
+    }
   }
 
   const addBox = async () => {
@@ -679,7 +683,7 @@ export function App() {
           <DialogHeader>
             <DialogTitle>Confirmar eliminación</DialogTitle>
             <DialogDescription>
-              ��Está seguro de que desea eliminar la caja &quot;{boxToDelete?.name}&quot;? Esta acción eliminará todos los items dentro de la caja y no se puede deshacer.
+              Está seguro de que desea eliminar la caja &quot;{boxToDelete?.name}&quot;? Esta acción eliminará todos los items dentro de la caja y no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
