@@ -183,8 +183,10 @@ export function App() {
             box.id === editingBox ? updatedBox : box
           ));
 
-          // Actualiza activeBox para mostrar los items
-          setActiveBox(updatedBox); // Asegúrate de que activeBox se actualice correctamente
+          // Actualiza activeBox solo si es la misma caja que se está editando
+          if (activeBox?.id === editingBox) {
+            setActiveBox(updatedBox); // Asegúrate de que activeBox se actualice correctamente
+          }
 
           setEditingBox(null);
           setEditBoxNameError('');
