@@ -144,25 +144,53 @@ export function App() {
 
   const saveEditBox = async () => {
     if (editingBox) {
-      const trimmedName = editBoxName.trim()
+      const trimmedName = editBoxName.trim(); // Asegúrate de recortar el nombre
       if (trimmedName) {
+        // Verifica si ya existe una caja con el mismo nombre
+        const { data: existingBoxes, error: fetchError } = await supabase
+          .from('boxes')
+          .select('*')
+          .eq('name', trimmedName)
+          .neq('id', editingBox); // Asegúrate de que no se compare con la misma caja
+
+        if (fetchError) {
+          console.error('Error checking existing boxes:', fetchError);
+          return;
+        }
+
+        if (existingBoxes && existingBoxes.length > 0) {
+          setEditBoxNameError('Ya existe una caja con este nombre. Por favor, elige otro.');
+          return;
+        }
+
         const { data, error } = await supabase
           .from('boxes')
           .update({ name: trimmedName, description: editBoxDescription.trim() })
           .eq('id', editingBox)
-          .select()
+          .select();
         if (error) {
-          console.error('Error updating box:', error)
-          setEditBoxNameError('Error updating box. Please try again.')
+          console.error('Error updating box:', error);
+          setEditBoxNameError('Error updating box. Please try again.');
         } else {
+          // Actualiza el estado de boxes
+          const updatedBox = { 
+            ...data[0], 
+            items: activeBox?.items || [] // Mantiene los items existentes
+          };
+
+          // Actualiza la lista de cajas
           setBoxes(boxes.map(box => 
-            box.id === editingBox ? (data && data[0] ? data[0] : box) : box
-          ))
-          setEditingBox(null)
-          setEditBoxNameError('')
+            box.id === editingBox ? updatedBox : box
+          ));
+
+          // Actualiza activeBox para mostrar los items
+          setActiveBox(updatedBox); // Asegúrate de que activeBox se actualice correctamente
+
+          setEditingBox(null);
+          setEditBoxNameError('');
         }
       } else {
-        setEditBoxNameError('Box name cannot be empty.')
+        setEditBoxNameError('El nombre de la caja no puede estar vacío.');
       }
     }
   }
