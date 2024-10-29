@@ -105,7 +105,17 @@ export function App() {
         console.error('Error adding box:', error);
         setNewBoxNameError('Error adding box. Please try again.');
       } else {
-        setBoxes([...(data || []), ...boxes]);
+        // Actualiza la lista de cajas respetando el orden actual
+        const newBox = data[0];
+        const updatedBoxes = [...boxes, newBox];
+
+        if (sortOrder === 'alphabetical') {
+          updatedBoxes.sort((a, b) => a.name.localeCompare(b.name));
+        } else if (sortOrder === 'date') {
+          updatedBoxes.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        }
+
+        setBoxes(updatedBoxes);
         setNewBoxName('');
         setNewBoxDescription('');
         setNewBoxNameError('');
