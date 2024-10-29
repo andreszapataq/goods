@@ -59,6 +59,7 @@ export function App() {
   const [isAddingItem, setIsAddingItem] = useState(false)
   const [isDeleteItemDialogOpen, setIsDeleteItemDialogOpen] = useState(false)
   const [itemToDelete, setItemToDelete] = useState<Item | null>(null)
+  const [sortOrder, setSortOrder] = useState<'alphabetical' | 'date' | null>(null); // Agregar estado para el orden
 
   useEffect(() => {
     fetchBoxes()
@@ -468,10 +469,24 @@ export function App() {
 
       {/* Botones de ordenación */}
       <div className="flex space-x-4 mb-4">
-        <Button variant="link" onClick={() => setBoxes([...boxes].sort((a, b) => a.name.localeCompare(b.name)))}>
+        <Button 
+          variant="link" 
+          onClick={() => {
+            setBoxes([...boxes].sort((a, b) => a.name.localeCompare(b.name)));
+            setSortOrder('alphabetical'); // Establecer el orden actual
+          }} 
+          className={sortOrder === 'alphabetical' ? 'underline' : ''} // Aplicar clase condicional
+        >
           Ordenar Alfabéticamente
         </Button>
-        <Button variant="link" onClick={() => setBoxes([...boxes].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()))}>
+        <Button 
+          variant="link" 
+          onClick={() => {
+            setBoxes([...boxes].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
+            setSortOrder('date'); // Establecer el orden actual
+          }} 
+          className={sortOrder === 'date' ? 'underline' : ''} // Aplicar clase condicional
+        >
           Ordenar por Fecha de Creación
         </Button>
       </div>
