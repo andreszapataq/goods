@@ -426,6 +426,7 @@ export function App() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col space-y-2">
+            {/* Formulario para agregar caja */}
             <Input
               type="text"
               placeholder="Nombre de la caja"
@@ -460,11 +461,20 @@ export function App() {
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{newBoxNameError}</AlertDescription>
               </Alert>
-            
             )}
           </div>
         </CardContent>
       </Card>
+
+      {/* Botones de ordenación */}
+      <div className="flex space-x-4 mb-4">
+        <Button variant="link" onClick={() => setBoxes([...boxes].sort((a, b) => a.name.localeCompare(b.name)))}>
+          Ordenar Alfabéticamente
+        </Button>
+        <Button variant="link" onClick={() => setBoxes([...boxes].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()))}>
+          Ordenar por Fecha de Creación
+        </Button>
+      </div>
 
       {/* Lista de cajas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
