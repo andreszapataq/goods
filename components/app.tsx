@@ -59,7 +59,7 @@ export function App() {
   const [isAddingItem, setIsAddingItem] = useState(false)
   const [isDeleteItemDialogOpen, setIsDeleteItemDialogOpen] = useState(false)
   const [itemToDelete, setItemToDelete] = useState<Item | null>(null)
-  const [sortOrder, setSortOrder] = useState<'alphabetical' | 'date' | null>(null); // Agregar estado para el orden
+  const [sortOrder, setSortOrder] = useState<'alphabetical' | 'date'>('date'); // Establecer el estado inicial en 'date'
 
   useEffect(() => {
     fetchBoxes()
