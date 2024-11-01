@@ -409,20 +409,22 @@ export function App() {
           </CardHeader>
           <CardContent>
             {searchResults.length > 0 ? (
-              <ul>
-                {searchResults.map(result => (
-                  <li 
-                    key={result.item.id} 
-                    className="mb-2 cursor-pointer hover:bg-gray-100 p-2 rounded"
-                    onClick={() => openBox(result.boxId)}
-                  >
-                    <strong>{result.item.name}</strong>
-                    {result.item.description && ` - ${result.item.description}`}
-                    <br />
-                    <span className="text-sm text-gray-500">En la caja: {result.boxName}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="max-h-[60vh] overflow-y-auto">
+                <ul>
+                  {searchResults.map(result => (
+                    <li 
+                      key={result.item.id} 
+                      className="mb-2 cursor-pointer hover:bg-gray-100 p-2 rounded"
+                      onClick={() => openBox(result.boxId)}
+                    >
+                      <strong>{result.item.name}</strong>
+                      {result.item.description && ` - ${result.item.description}`}
+                      <br />
+                      <span className="text-sm text-gray-500">En la caja: {result.boxName}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ) : (
               <p>No se encontraron items.</p>
             )}
@@ -606,7 +608,7 @@ export function App() {
             {activeBox && activeBox.items && activeBox.items.length > 0 ? (
               <Button onClick={() => setIsAddingItem(true)} className="w-full">
                 <PlusCircle className="h-4 w-4 mr-2" />
-                Agregar Item
+                Agregar Nuevo Item
               </Button>
             ) : (
               <div className="space-y-2">
