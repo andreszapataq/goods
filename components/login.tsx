@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -12,16 +15,28 @@ const features = [
 ]
 
 export default function Component() {
+  const [isLogin, setIsLogin] = useState(true)
+
+  const toggleForm = () => setIsLogin(!isLogin)
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-3xl font-heading">Sign in</CardTitle>
+          <CardTitle className="text-3xl font-heading">{isLogin ? "Sign in" : "Sign up"}</CardTitle>
           <CardDescription>
-            Enter your email and password to access your inventory
+            {isLogin
+              ? "Enter your email and password to access your inventory"
+              : "Create an account to start tracking your inventory"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {!isLogin && (
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" placeholder="John Doe" required />
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" placeholder="m@example.com" required type="email" />
@@ -30,18 +45,20 @@ export default function Component() {
             <Label htmlFor="password">Password</Label>
             <Input id="password" required type="password" />
           </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox id="remember" />
-            <Label htmlFor="remember">Remember me</Label>
-          </div>
+          {isLogin && (
+            <div className="flex items-center space-x-2">
+              <Checkbox id="remember" />
+              <Label htmlFor="remember">Remember me</Label>
+            </div>
+          )}
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button className="w-full">Sign in</Button>
+          <Button className="w-full">{isLogin ? "Sign in" : "Sign up"}</Button>
           <div className="text-sm text-muted-foreground text-center">
-            Don&apos;t have an account?{" "}
-            <a className="underline text-primary hover:text-primary/90" href="#">
-              Sign up
-            </a>
+            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+            <button className="underline text-primary hover:text-primary/90" onClick={toggleForm}>
+              {isLogin ? "Sign up" : "Sign in"}
+            </button>
           </div>
           <div className="border-t pt-4">
             <h3 className="font-heading text-lg mb-2 text-center">Why use our app?</h3>
