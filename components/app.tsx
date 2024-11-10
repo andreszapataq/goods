@@ -9,6 +9,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { PlusCircle, Edit2, Check, X, Trash2, AlertCircle, Search } from "lucide-react"
 import { supabase } from "@/utils/supabase" // Importar el cliente de Supabase
+import { useRouter } from 'next/navigation'
+import { User } from '@supabase/supabase-js'  // Añadir esta importación al inicio
 
 type Item = {
   id: string
@@ -34,6 +36,8 @@ type SearchResult = {
 }
 
 export function App() {
+  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null)
   const [boxes, setBoxes] = useState<Box[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [newBoxName, setNewBoxName] = useState('')
@@ -62,66 +66,85 @@ export function App() {
   const [sortOrder, setSortOrder] = useState<'alphabetical' | 'date'>('date'); // Establecer el estado inicial en 'date'
 
   useEffect(() => {
+    checkUser()
     fetchBoxes()
   }, [])
 
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      router.push('/login')
+      return
+    }
+    setUser(user)
+  }
+
   const fetchBoxes = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
     const { data, error } = await supabase
       .from('boxes')
-      .select('*, items(*)') // Incluye los items en la consulta
-      .order('created_at', { ascending: false });
+      .select('*, items(*)')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
     
     if (error) {
-      console.error('Error fetching boxes:', error);
+      console.error('Error fetching boxes:', error)
     } else {
-      setBoxes(data || []);
+      setBoxes(data || [])
     }
   }
 
   const addBox = async () => {
-    const trimmedName = newBoxName.trim();
+    const trimmedName = newBoxName.trim()
     if (trimmedName) {
-      // Verifica si ya existe una caja con el mismo nombre
       const { data: existingBoxes, error: fetchError } = await supabase
         .from('boxes')
         .select('*')
-        .eq('name', trimmedName);
+        .eq('name', trimmedName)
+        .eq('user_id', user?.id || '')
 
-      if (fetchError) {
-        console.error('Error checking existing boxes:', fetchError);
-        return;
+      if (fetchError || !user) {
+        console.error('Error checking existing boxes:', fetchError)
+        return
       }
 
       if (existingBoxes && existingBoxes.length > 0) {
-        setNewBoxNameError('Ya existe una caja con este nombre. Por favor, elige otro.');
-        return;
+        setNewBoxNameError('Ya existe una caja con este nombre. Por favor, elige otro.')
+        return
       }
 
       const { data, error } = await supabase
         .from('boxes')
-        .insert({ name: trimmedName, description: newBoxDescription.trim(), item_count: 0 })
-        .select();
+        .insert({ 
+          name: trimmedName, 
+          description: newBoxDescription.trim(), 
+          item_count: 0,
+          user_id: user.id
+        })
+        .select()
+      
       if (error) {
-        console.error('Error adding box:', error);
-        setNewBoxNameError('Error adding box. Please try again.');
+        console.error('Error adding box:', error)
+        setNewBoxNameError('Error adding box. Please try again.')
       } else {
-        // Actualiza la lista de cajas respetando el orden actual
-        const newBox = data[0];
-        const updatedBoxes = [...boxes, newBox];
+        const newBox = data[0]
+        const updatedBoxes = [...boxes, newBox]
 
         if (sortOrder === 'alphabetical') {
-          updatedBoxes.sort((a, b) => a.name.localeCompare(b.name));
+          updatedBoxes.sort((a, b) => a.name.localeCompare(b.name))
         } else if (sortOrder === 'date') {
-          updatedBoxes.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+          updatedBoxes.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         }
 
-        setBoxes(updatedBoxes);
-        setNewBoxName('');
-        setNewBoxDescription('');
-        setNewBoxNameError('');
+        setBoxes(updatedBoxes)
+        setNewBoxName('')
+        setNewBoxDescription('')
+        setNewBoxNameError('')
       }
     } else {
-      setNewBoxNameError('Por favor, ingrese un nombre para la caja.');
+      setNewBoxNameError('Por favor, ingrese un nombre para la caja.')
     }
   }
 
@@ -155,55 +178,51 @@ export function App() {
 
   const saveEditBox = async () => {
     if (editingBox) {
-      const trimmedName = editBoxName.trim(); // Asegúrate de recortar el nombre
+      const trimmedName = editBoxName.trim()
       if (trimmedName) {
-        // Verifica si ya existe una caja con el mismo nombre
         const { data: existingBoxes, error: fetchError } = await supabase
           .from('boxes')
           .select('*')
           .eq('name', trimmedName)
-          .neq('id', editingBox); // Asegúrate de que no se compare con la misma caja
+          .neq('id', editingBox)
 
         if (fetchError) {
-          console.error('Error checking existing boxes:', fetchError);
-          return;
+          console.error('Error checking existing boxes:', fetchError)
+          return
         }
 
         if (existingBoxes && existingBoxes.length > 0) {
-          setEditBoxNameError('Ya existe una caja con este nombre. Por favor, elige otro.');
-          return;
+          setEditBoxNameError('Ya existe una caja con este nombre. Por favor, elige otro.')
+          return
         }
 
         const { data, error } = await supabase
           .from('boxes')
           .update({ name: trimmedName, description: editBoxDescription.trim() })
           .eq('id', editingBox)
-          .select();
+          .select()
         if (error) {
-          console.error('Error updating box:', error);
-          setEditBoxNameError('Error updating box. Please try again.');
+          console.error('Error updating box:', error)
+          setEditBoxNameError('Error updating box. Please try again.')
         } else {
-          // Actualiza el estado de boxes
           const updatedBox = { 
             ...data[0], 
-            items: activeBox?.items || [] // Mantiene los items existentes
-          };
-
-          // Actualiza la lista de cajas
-          setBoxes(boxes.map(box => 
-            box.id === editingBox ? updatedBox : box
-          ));
-
-          // Actualiza activeBox solo si es la misma caja que se está editando
-          if (activeBox?.id === editingBox) {
-            setActiveBox(updatedBox); // Asegúrate de que activeBox se actualice correctamente
+            items: activeBox?.items || []
           }
 
-          setEditingBox(null);
-          setEditBoxNameError('');
+          setBoxes(boxes.map(box => 
+            box.id === editingBox ? updatedBox : box
+          ))
+
+          if (activeBox?.id === editingBox) {
+            setActiveBox(updatedBox)
+          }
+
+          setEditingBox(null)
+          setEditBoxNameError('')
         }
       } else {
-        setEditBoxNameError('El nombre de la caja no puede estar vacío.');
+        setEditBoxNameError('El nombre de la caja no puede estar vacío.')
       }
     }
   }
@@ -227,20 +246,18 @@ export function App() {
         console.error('Error adding item:', error)
         setNewItemNameError('Error adding item. Please try again.')
       } else {
-        // Actualiza el contador en la base de datos
         await supabase
           .from('boxes')
           .update({ item_count: activeBox.item_count + 1 })
           .eq('id', activeBox.id)
 
-        // Agrega el nuevo item a la lista de items de activeBox
         const updatedBox = { 
           ...activeBox, 
-          items: [...(activeBox.items || []), data[0]], // Agrega el nuevo item aquí
+          items: [...(activeBox.items || []), data[0]],
           item_count: activeBox.item_count + 1 
         }
-        setBoxes(boxes.map(box => box.id === activeBox.id ? updatedBox : box)) // Actualiza la lista de cajas
-        setActiveBox(updatedBox) // Actualiza activeBox para mostrar el nuevo item
+        setBoxes(boxes.map(box => box.id === activeBox.id ? updatedBox : box))
+        setActiveBox(updatedBox)
         setNewItemName('')
         setNewItemDescription('')
         setNewItemNameError('')
@@ -351,7 +368,6 @@ export function App() {
         console.error('Error deleting item:', error)
       } else {
         const updatedItems = activeBox?.items?.filter(item => item.id !== itemToDelete.id)
-        // Actualiza el contador en la base de datos
         await supabase
           .from('boxes')
           .update({ item_count: activeBox.item_count - 1 })
