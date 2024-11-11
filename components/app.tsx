@@ -7,10 +7,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { PlusCircle, Edit2, Check, X, Trash2, AlertCircle, Search } from "lucide-react"
+import { PlusCircle, Edit2, Check, X, Trash2, AlertCircle, Search, LogOut, User as UserIcon, Box } from "lucide-react"
 import { supabase } from "@/utils/supabase" // Importar el cliente de Supabase
 import { useRouter } from 'next/navigation'
 import { User } from '@supabase/supabase-js'  // Añadir esta importación al inicio
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 type Item = {
   id: string
@@ -64,6 +70,10 @@ export function App() {
   const [isDeleteItemDialogOpen, setIsDeleteItemDialogOpen] = useState(false)
   const [itemToDelete, setItemToDelete] = useState<Item | null>(null)
   const [sortOrder, setSortOrder] = useState<'alphabetical' | 'date'>('date'); // Establecer el estado inicial en 'date'
+  const [userData, setUserData] = useState<{ name: string | null, email: string | null }>({
+    name: null,
+    email: null
+  })
 
   useEffect(() => {
     checkUser()
@@ -77,6 +87,10 @@ export function App() {
       return
     }
     setUser(user)
+    setUserData({
+      name: user.user_metadata?.full_name || 'Usuario',
+      email: user.email || ''
+    })
   }
 
   const fetchBoxes = async () => {
@@ -391,8 +405,33 @@ export function App() {
     item.description.toLowerCase().includes(boxSearchTerm.toLowerCase())
   ) || []
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
   return (
     <div className="container mx-auto p-4">
+      <div className="absolute top-4 right-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 rounded-full">
+              <UserIcon className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuItem className="flex flex-col items-start">
+              <span className="font-medium">{userData.name}</span>
+              <span className="text-sm text-gray-500">{userData.email}</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+              <LogOut className="mr-2 h-4 w-4" />
+              Cerrar sesión
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       <h1 className="text-2xl font-bold mb-4">Inventario Personal</h1>
       
       {/* Barra de búsqueda principal */}
