@@ -412,11 +412,14 @@ export function App() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="absolute top-4 right-4">
+      <div className="flex justify-end">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 rounded-full">
-              <UserIcon className="h-5 w-5" />
+            <Button 
+              variant="outline"
+              className="h-10 w-10 rounded-full p-0 border-2"
+            >
+              <UserIcon className="h-5 w-5 text-foreground" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
