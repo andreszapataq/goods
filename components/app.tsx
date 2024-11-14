@@ -436,7 +436,7 @@ export function App() {
           </DropdownMenu>
         </div>
 
-        <h1 className="text-2xl font-bold mb-4 mt-12 sm:mt-0">Inventario Personal</h1>
+        <h1 className="text-3xl font-bold mb-4 mt-12 sm:mt-0">Goods</h1>
         
         {/* Barra de búsqueda principal */}
         <div className="mb-4 relative">
