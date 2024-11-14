@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Skeleton } from "@/components/ui/skeleton"
 
 type Item = {
   id: string
@@ -74,6 +75,7 @@ export function App() {
     name: null,
     email: null
   })
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     checkUser()
@@ -94,6 +96,7 @@ export function App() {
   }
 
   const fetchBoxes = async () => {
+    setIsLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
@@ -108,6 +111,7 @@ export function App() {
     } else {
       setBoxes(data || [])
     }
+    setIsLoading(false)
   }
 
   const addBox = async () => {
@@ -410,6 +414,12 @@ export function App() {
     router.push('/login')
   }
 
+  const BoxSkeleton = () => (
+    <div className="space-y-3">
+      <Skeleton className="h-[125px] w-full rounded-lg" />
+    </div>
+  )
+
   return (
     <div className="container mx-auto px-4 py-2 sm:py-4">
       <div className="flex flex-col">
@@ -564,77 +574,87 @@ export function App() {
 
         {/* Lista de cajas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {boxes.map(box => (
-            <Card key={box.id} className="mb-2 sm:mb-4">
-              <CardHeader className="p-4 sm:p-6">
-                {editingBox === box.id ? (
-                  <div className="space-y-2">
-                    <Input
-                      type="text"
-                      value={editBoxName}
-                      onChange={(e) => {
-                        setEditBoxName(e.target.value)
-                        setEditBoxNameError('')
-                      }}
-                      placeholder={box.name}
-                    />
-                    <Input
-                      type="text"
-                      value={editBoxDescription}
-                      onChange={(e) => setEditBoxDescription(e.target.value.slice(0, 54))}
-                      placeholder="Descripción de la caja (máx. 54 caracteres)"
-                      maxLength={54}
-                    />
-                    <div className="flex justify-end space-x-2">
-                      <Button onClick={saveEditBox} size="sm">
-                        <Check className="h-4 w-4" />
-                      </Button>
-                      <Button onClick={cancelEditBox} variant="outline" size="sm">
-                        <X className="h-4 w-4" />
-                      </Button>
+          {isLoading ? (
+            // Mostrar 6 skeletons mientras carga
+            <>
+              {[...Array(6)].map((_, i) => (
+                <BoxSkeleton key={i} />
+              ))}
+            </>
+          ) : (
+            // Mostrar las cajas cuando termina de cargar
+            boxes.map(box => (
+              <Card key={box.id} className="mb-2 sm:mb-4">
+                <CardHeader className="p-4 sm:p-6">
+                  {editingBox === box.id ? (
+                    <div className="space-y-2">
+                      <Input
+                        type="text"
+                        value={editBoxName}
+                        onChange={(e) => {
+                          setEditBoxName(e.target.value)
+                          setEditBoxNameError('')
+                        }}
+                        placeholder={box.name}
+                      />
+                      <Input
+                        type="text"
+                        value={editBoxDescription}
+                        onChange={(e) => setEditBoxDescription(e.target.value.slice(0, 54))}
+                        placeholder="Descripción de la caja (máx. 54 caracteres)"
+                        maxLength={54}
+                      />
+                      <div className="flex justify-end space-x-2">
+                        <Button onClick={saveEditBox} size="sm">
+                          <Check className="h-4 w-4" />
+                        </Button>
+                        <Button onClick={cancelEditBox} variant="outline" size="sm">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      {editBoxNameError && (
+                        <Alert variant="destructive">
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertDescription>{editBoxNameError}</AlertDescription>
+                        </Alert>
+                      )}
                     </div>
-                    {editBoxNameError && (
-                      <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription>{editBoxNameError}</AlertDescription>
-                      </Alert>
-                    )}
-                  </div>
-                ) : (
-                  <CardTitle className="flex justify-between items-center">
-                    <div>
-                      {box.name}
-                      <Badge variant="secondary" className="ml-2">{box.item_count} items</Badge>
-                    </div>
-                    <div>
-                      <Button onClick={() => startEditingBox(box)} variant="ghost" size="sm" className="mr-1">
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Button onClick={() => deleteBox(box)} variant="ghost" size="sm">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardTitle>
-                )}
-              </CardHeader>
-              <CardContent className="p-4 sm:p-6">
-                {box.description && <p className="text-sm text-gray-500 mb-2">{box.description}</p>}
-                <Button onClick={() => openBox(box.id)} className="mb-2">Ver Items</Button>
-                
-                {/* Mostrar los tres primeros items */}
-                <ul className="space-y-1">
-                  {box.items && box.items.slice(0, 3).map(item => (
-                    <li key={item.id} className="text-sm text-gray-700">
-                      {item.name} {item.description && `- ${item.description}`}
-                    </li>
-                  ))}
-                  {box.items && box.items.length > 3 && (
-                    <li className="text-sm text-gray-500">...</li> // Puntos suspensivos si hay más de 3 items
+                  ) : (
+                    <CardTitle className="flex justify-between items-center">
+                      <div>
+                        {box.name}
+                        <Badge variant="secondary" className="ml-2">{box.item_count} items</Badge>
+                      </div>
+                      <div>
+                        <Button onClick={() => startEditingBox(box)} variant="ghost" size="sm" className="mr-1">
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button onClick={() => deleteBox(box)} variant="ghost" size="sm">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardTitle>
                   )}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
+                </CardHeader>
+                <CardContent className="p-4 sm:p-6">
+                  {box.description && <p className="text-sm text-gray-500 mb-2">{box.description}</p>}
+                  <Button onClick={() => openBox(box.id)} className="mb-2">Ver Items</Button>
+                  
+                  {/* Mostrar los tres primeros items */}
+                  <ul className="space-y-1">
+                    {box.items && box.items.slice(0, 3).map(item => (
+                      <li key={item.id} className="text-sm text-gray-700">
+                        {item.name} {item.description && `- ${item.description}`}
+                      </li>
+                    ))}
+                    {box.items && box.items.length > 3 && (
+                      <li className="text-sm text-gray-500">...</li> // Puntos suspensivos si hay más de 3 items
+                    )}
+                  </ul>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
 
         {/* Diálogo para ver items de la caja */}
