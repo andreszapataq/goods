@@ -798,7 +798,7 @@ export function App() {
                       ) : (
                         <div className="flex items-center justify-between">
                           <div>
-                            <span className="font-bold">{item.name}</span>
+                            <span className="font-semibold">{item.name}</span>
                             <br />
                             <span className="text-sm text-gray-500">{item.description}</span>
                           </div>
