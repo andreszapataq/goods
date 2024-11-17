@@ -517,11 +517,11 @@ export function App() {
                   setNewBoxName(e.target.value)
                   setNewBoxNameError('')
                 }}
-                onKeyPress={(e) => e.key === 'Enter' && addBox()}
+                onKeyDown={(e) => e.key === 'Enter' && addBox()}
               />
               <Input
                 type="text"
-                placeholder="Descripción de la caja (máx. 54 caracteres)"
+                placeholder="Descripción de la caja"
                 value={newBoxDescription}
                 onChange={(e) => setNewBoxDescription(e.target.value.slice(0, 54))}
                 maxLength={54}
