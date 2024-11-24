@@ -584,7 +584,7 @@ export function App() {
           ) : (
             // Mostrar las cajas cuando termina de cargar
             boxes.map(box => (
-              <Card key={box.id} className="mb-2 sm:mb-4">
+              <Card key={box.id} className="mb-2 sm:mb-4 bg-floral-white">
                 <CardHeader className="p-4 sm:p-6">
                   {editingBox === box.id ? (
                     <div className="space-y-2">
@@ -601,7 +601,7 @@ export function App() {
                         type="text"
                         value={editBoxDescription}
                         onChange={(e) => setEditBoxDescription(e.target.value.slice(0, 54))}
-                        placeholder="Descripción de la caja (máx. 54 caracteres)"
+                        placeholder="Descripción de la caja"
                         maxLength={54}
                       />
                       <div className="flex justify-end space-x-2">
@@ -623,13 +623,13 @@ export function App() {
                     <CardTitle className="flex justify-between items-center">
                       <div>
                         {box.name}
-                        <Badge variant="secondary" className="ml-2">{box.item_count} items</Badge>
+                        <Badge className="ml-2 font-light">{box.item_count} items</Badge>
                       </div>
                       <div>
-                        <Button onClick={() => startEditingBox(box)} variant="ghost" size="sm" className="mr-1">
+                        <Button onClick={() => startEditingBox(box)} variant="ghost" size="sm" className="mr-1 hover:bg-electric-blue">
                           <Edit2 className="h-4 w-4" />
                         </Button>
-                        <Button onClick={() => deleteBox(box)} variant="ghost" size="sm">
+                        <Button onClick={() => deleteBox(box)} variant="ghost" size="sm" className='hover:bg-electric-blue'>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -663,7 +663,7 @@ export function App() {
             <DialogHeader>
               <DialogTitle className="flex justify-between items-center">
                 {activeBox?.name}
-                <Badge variant="secondary">{activeBox?.item_count} items</Badge>
+                <Badge>{activeBox?.item_count} items</Badge>
               </DialogTitle>
               {activeBox?.description && (
                 <DialogDescription>
@@ -699,7 +699,7 @@ export function App() {
                       setNewItemName(e.target.value)
                       setNewItemNameError('')
                     }}
-                    onKeyDown={(e) => { // Cambiado de onKeyPress a onKeyDown
+                    onKeyDown={(e) => {
                       if (e.key === 'Enter' && newItemName.trim()) {
                         (document.querySelector('input[placeholder="Descripción del item"]') as HTMLInputElement)?.focus()
                       }
@@ -710,7 +710,7 @@ export function App() {
                     placeholder="Descripción del item"
                     value={newItemDescription}
                     onChange={(e) => setNewItemDescription(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && addItem()} // Cambiado de onKeyPress a onKeyDown
+                    onKeyDown={(e) => e.key === 'Enter' && addItem()}
                   />
                   <Button onClick={addItem} className="w-full">Agregar Primer Item</Button>
                   {newItemNameError && (
@@ -731,7 +731,7 @@ export function App() {
                       setNewItemName(e.target.value)
                       setNewItemNameError('')
                     }}
-                    onKeyPress={(e) => {
+                    onKeyDown={(e) => {
                       if (e.key === 'Enter' && newItemName.trim()) {
                         (document.querySelector('input[placeholder="Descripción del item"]') as HTMLInputElement)?.focus()
                       }
@@ -742,7 +742,7 @@ export function App() {
                     placeholder="Descripción del item"
                     value={newItemDescription}
                     onChange={(e) => setNewItemDescription(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addItem()}
+                    onKeyDown={(e) => e.key === 'Enter' && addItem()}
                   />
                   <Button onClick={addItem}>Agregar Item</Button>
                   {newItemNameError && (
@@ -766,7 +766,7 @@ export function App() {
                               setEditItemName(e.target.value)
                               setEditItemNameError('')
                             }}
-                            onKeyDown={(e) => { // Cambiado de onKeyPress a onKeyDown
+                            onKeyDown={(e) => {
                               if (e.key === 'Enter' && editItemName.trim()) {
                                 (document.querySelector('input[value="' + editItemDescription + '"]') as HTMLInputElement)?.focus()
                               }
@@ -777,7 +777,7 @@ export function App() {
                             type="text"
                             value={editItemDescription}
                             onChange={(e) => setEditItemDescription(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && saveEdit()} // Cambiado de onKeyPress a onKeyDown
+                            onKeyDown={(e) => e.key === 'Enter' && saveEdit()}
                             placeholder={item.description || "Descripción del item"}
                           />
                           <div className="flex space-x-2">
@@ -803,13 +803,13 @@ export function App() {
                             <span className="text-sm text-gray-500">{item.description}</span>
                           </div>
                           <div>
-                            <Button onClick={() => startEditing(item)} variant="ghost" size="sm" className="mr-1">
+                            <Button onClick={() => startEditing(item)} variant="ghost" size="sm" className="mr-1 hover:bg-electric-blue">
                               <Edit2 className="h-4 w-4" />
                             </Button>
                             <Button onClick={() => {
                               setItemToDelete(item)
                               setIsDeleteItemDialogOpen(true)
-                            }} variant="ghost" size="sm">
+                            }} variant="ghost" size="sm" className='hover:bg-electric-blue'>
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>

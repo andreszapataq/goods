@@ -11,9 +11,14 @@ const config: Config = {
   theme: {
   	extend: {
 		fontFamily: {
-			sans: ['greycliff-cf', 'sans-serif'],
+			sans: ['proxima-nova', 'sans-serif'],
 		},
   		colors: {
+			'castleton-green': '#00563b',
+			'canary': '#ffef00',
+			'electric-blue': '#87f1ff',
+			'floral-white': '#fbf8ef',
+			'platinum': '#e9e9e9',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
