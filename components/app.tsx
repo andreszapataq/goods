@@ -434,11 +434,11 @@ export function App() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 mt-2">
-              <DropdownMenuItem className="flex flex-col items-start">
+              <DropdownMenuItem className="flex flex-col items-start cursor-pointer">
                 <span className="font-medium">{userData.name}</span>
                 <span className="text-sm text-gray-500">{userData.email}</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+              <DropdownMenuItem onClick={handleSignOut} className="text-red-600 cursor-pointer">
                 <LogOut className="mr-2 h-4 w-4" />
                 Cerrar sesión
               </DropdownMenuItem>
@@ -623,7 +623,7 @@ export function App() {
                     <CardTitle className="flex justify-between items-center">
                       <div>
                         {box.name}
-                        <Badge className="ml-2 font-light">{box.item_count} items</Badge>
+                        <Badge className="ml-3">{box.item_count} items</Badge>
                       </div>
                       <div>
                         <Button onClick={() => startEditingBox(box)} variant="ghost" size="sm" className="mr-1 hover:bg-electric-blue">
@@ -659,11 +659,11 @@ export function App() {
 
         {/* Diálogo para ver items de la caja */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="w-[95vw] sm:w-[90vw] max-w-[800px] h-[90vh] sm:h-auto overflow-y-auto">
+          <DialogContent className="w-[95vw] sm:w-[90vw] max-w-[800px] h-[90vh] sm:h-auto overflow-y-auto sm:rounded-[17px]">
             <DialogHeader>
               <DialogTitle className="flex justify-between items-center">
                 {activeBox?.name}
-                <Badge>{activeBox?.item_count} items</Badge>
+                <Badge className="mr-4">{activeBox?.item_count} items</Badge>
               </DialogTitle>
               {activeBox?.description && (
                 <DialogDescription>
