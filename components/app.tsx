@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
+import Image from 'next/image'
 
 type Item = {
   id: string
@@ -446,8 +447,17 @@ export function App() {
           </DropdownMenu>
         </div>
 
-        <h1 className="text-3xl font-bold mb-4 mt-12 sm:mt-0">Goods</h1>
-        
+        <div className="flex items-center mb-4 mt-12 sm:mt-0">
+          <Image
+            src="/logo.svg"
+            alt="Goods Logo"
+            width={140}
+            height={40}
+            priority
+            className="h-auto"
+          />
+        </div>
+
         {/* Barra de búsqueda principal */}
         <div className="mb-4 relative">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -661,7 +671,7 @@ export function App() {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="w-[95vw] sm:w-[90vw] max-w-[800px] h-[90vh] sm:h-auto overflow-y-auto sm:rounded-[17px]">
             <DialogHeader>
-              <DialogTitle className="flex justify-between items-center">
+              <DialogTitle className="flex justify-between items-center text-xl">
                 {activeBox?.name}
                 <Badge className="mr-4">{activeBox?.item_count} items</Badge>
               </DialogTitle>
