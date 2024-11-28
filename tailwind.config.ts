@@ -19,6 +19,7 @@ const config: Config = {
 			'electric-blue': '#87f1ff',
 			'floral-white': '#fbf8ef',
 			'platinum': '#e9e9e9',
+			'baby-powder': '#fdfbf7',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
