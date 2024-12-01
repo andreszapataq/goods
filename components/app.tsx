@@ -77,6 +77,8 @@ export function App() {
     email: null
   })
   const [isLoading, setIsLoading] = useState(true)
+  const [showNewBoxDescriptionLimit, setShowNewBoxDescriptionLimit] = useState(false)
+  const [showEditBoxDescriptionLimit, setShowEditBoxDescriptionLimit] = useState(false)
 
   useEffect(() => {
     checkUser()
@@ -161,6 +163,7 @@ export function App() {
         setNewBoxName('')
         setNewBoxDescription('')
         setNewBoxNameError('')
+        setShowNewBoxDescriptionLimit(false)
       }
     } else {
       setNewBoxNameError('Por favor, ingrese un nombre para la caja.')
@@ -193,6 +196,7 @@ export function App() {
     setEditBoxName(box.name)
     setEditBoxDescription(box.description)
     setEditBoxNameError('')
+    setShowEditBoxDescriptionLimit(false)
   }
 
   const saveEditBox = async () => {
@@ -239,6 +243,7 @@ export function App() {
 
           setEditingBox(null)
           setEditBoxNameError('')
+          setShowEditBoxDescriptionLimit(false)
         }
       } else {
         setEditBoxNameError('El nombre de la caja no puede estar vacío.')
@@ -249,6 +254,7 @@ export function App() {
   const cancelEditBox = () => {
     setEditingBox(null)
     setEditBoxNameError('')
+    setShowEditBoxDescriptionLimit(false)
   }
 
   const addItem = async () => {
@@ -533,9 +539,15 @@ export function App() {
                 type="text"
                 placeholder="Descripción de la caja"
                 value={newBoxDescription}
-                onChange={(e) => setNewBoxDescription(e.target.value.slice(0, 54))}
+                onChange={(e) => {
+                  setNewBoxDescription(e.target.value.slice(0, 54))
+                  setShowNewBoxDescriptionLimit(e.target.value.length >= 54)
+                }}
                 maxLength={54}
               />
+              {showNewBoxDescriptionLimit && (
+                <p className="text-sm text-red-500">Has alcanzado el límite de caracteres permitidos</p>
+              )}
               <div className="flex sm:hidden">
                 <Button onClick={addBox} className="w-full">
                   <PlusCircle className="h-4 w-4 mr-2" />
@@ -610,10 +622,16 @@ export function App() {
                       <Input
                         type="text"
                         value={editBoxDescription}
-                        onChange={(e) => setEditBoxDescription(e.target.value.slice(0, 54))}
+                        onChange={(e) => {
+                          setEditBoxDescription(e.target.value.slice(0, 54))
+                          setShowEditBoxDescriptionLimit(e.target.value.length >= 54)
+                        }}
                         placeholder="Descripción de la caja"
                         maxLength={54}
                       />
+                      {showEditBoxDescriptionLimit && (
+                        <p className="text-sm text-red-500">Has alcanzado el límite de caracteres permitidos</p>
+                      )}
                       <div className="flex justify-end space-x-2">
                         <Button onClick={saveEditBox} size="sm">
                           <Check className="h-4 w-4" />
