@@ -606,7 +606,7 @@ export function App() {
           ) : (
             // Mostrar las cajas cuando termina de cargar
             boxes.map(box => (
-              <Card key={box.id} className="mb-2 sm:mb-4 bg-baby-powder">
+              <Card key={box.id} className="mb-2 sm:mb-4 bg-floral-white">
                 <CardHeader className="p-4 sm:p-6">
                   {editingBox === box.id ? (
                     <div className="space-y-2">
