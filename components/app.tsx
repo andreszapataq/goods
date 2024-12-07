@@ -523,7 +523,7 @@ export function App() {
         )}
 
         {/* Formulario para agregar caja */}
-        <Card className="mb-4">
+        <Card className="mb-4 bg-gradient-to-br from-green-50 to-amber-50 rounded-2xl shadow">
           <CardHeader>
             <CardTitle>Agregar Nueva Caja</CardTitle>
           </CardHeader>
