@@ -664,8 +664,13 @@ export function App() {
                     </div>
                   ) : (
                     <CardTitle className="flex justify-between items-center">
-                      <div>
-                        {box.name}
+                      <div className="flex items-center">
+                        <span 
+                          className="box-name" 
+                          style={{ fontSize: box.name.length > 13 ? '0.875rem' : '1.5rem' }}
+                        >
+                          {box.name}
+                        </span>
                         <Badge className="ml-3">{box.item_count} items</Badge>
                       </div>
                       <div>
