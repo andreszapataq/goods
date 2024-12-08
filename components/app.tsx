@@ -535,12 +535,12 @@ export function App() {
                 placeholder="Nombre de la caja"
                 value={newBoxName}
                 onChange={(e) => {
-                  setNewBoxName(e.target.value.slice(0, 20))
+                  setNewBoxName(e.target.value.slice(0, 14))
                   setNewBoxNameError('')
-                  setShowNewBoxNameLimit(e.target.value.length >= 20)
+                  setShowNewBoxNameLimit(e.target.value.length >= 14)
                 }}
                 onKeyDown={(e) => e.key === 'Enter' && addBox()}
-                maxLength={20}
+                maxLength={14}
               />
               <Input
                 type="text"
@@ -556,7 +556,7 @@ export function App() {
                 <p className="text-sm text-red-500">Has alcanzado el límite de caracteres permitidos</p>
               )}
               {showNewBoxNameLimit && (
-                <p className="text-sm text-red-500">Has alcanzado el límite de 20 caracteres</p>
+                <p className="text-sm text-red-500">Has alcanzado el límite de 14 caracteres</p>
               )}
               <div className="flex sm:hidden">
                 <Button onClick={addBox} className="w-full">
@@ -624,12 +624,12 @@ export function App() {
                         type="text"
                         value={editBoxName}
                         onChange={(e) => {
-                          setEditBoxName(e.target.value.slice(0, 20))
+                          setEditBoxName(e.target.value.slice(0, 14))
                           setEditBoxNameError('')
-                          setShowEditBoxNameLimit(e.target.value.length >= 20)
+                          setShowEditBoxNameLimit(e.target.value.length >= 14)
                         }}
                         placeholder={box.name}
-                        maxLength={20}
+                        maxLength={14}
                       />
                       <Input
                         type="text"
@@ -645,7 +645,7 @@ export function App() {
                         <p className="text-sm text-red-500">Has alcanzado el límite de caracteres permitidos</p>
                       )}
                       {showEditBoxNameLimit && (
-                        <p className="text-sm text-red-500">Has alcanzado el límite de 20 caracteres</p>
+                        <p className="text-sm text-red-500">Has alcanzado el límite de 14 caracteres</p>
                       )}
                       <div className="flex justify-end space-x-2">
                         <Button onClick={saveEditBox} size="sm">
