@@ -663,10 +663,10 @@ export function App() {
                       )}
                     </div>
                   ) : (
-                    <CardTitle className="flex justify-between items-center">
+                    <CardTitle className="flex justify-between items-center overflow-hidden">
                       <div className="flex items-center">
                         <span 
-                          className="box-name" 
+                          className="box-name"
                           style={{ fontSize: box.name.length > 13 ? '0.875rem' : '1.5rem' }}
                         >
                           {box.name}
