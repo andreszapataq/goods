@@ -666,8 +666,7 @@ export function App() {
                     <CardTitle className="flex justify-between items-center overflow-hidden">
                       <div className="flex items-center">
                         <span 
-                          className="box-name"
-                          style={{ fontSize: box.name.length > 13 ? '0.875rem' : '1.5rem' }}
+                          className="box-name truncate max-w-[9.7rem] sm:max-w-[12.5rem] 2xl:max-w-[15.5rem]"
                         >
                           {box.name}
                         </span>
