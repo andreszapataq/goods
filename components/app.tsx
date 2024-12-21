@@ -433,20 +433,32 @@ export function App() {
   )
 
   return (
-    <div className="container mx-auto px-4 py-2 sm:py-4">
-      <div className="flex flex-col">
-        <div className="flex justify-end mb-2 sm:mb-4">
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      <div className="w-[200px] border-r-[1.5px] border-platinum bg-white flex flex-col justify-between p-4">
+        <div className="flex justify-center mt-2">
+          <a href="/" className="flex items-center">
+            <Image
+              src="/logo.svg"
+              alt="Goods Logo"
+              width={100}
+              height={30}
+              priority
+              className="h-auto"
+            />
+          </a>
+        </div>
+        
+        <div className="mt-auto">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline"
-                className="h-10 w-10 rounded-full p-0 border-2 fixed sm:relative top-2 right-4 sm:top-auto sm:right-auto z-10"
-              >
-                <UserIcon className="h-5 w-5 text-foreground" />
+              <Button variant="ghost" className="w-full flex items-center justify-start gap-2">
+                <UserIcon className="h-5 w-5" />
+                <span className="text-sm">{userData.name}</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 mt-2">
-              <DropdownMenuItem className="flex flex-col items-start cursor-pointer">
+            <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuItem className="flex flex-col items-start">
                 <span className="font-medium">{userData.name}</span>
                 <span className="text-sm text-gray-500">{userData.email}</span>
               </DropdownMenuItem>
@@ -457,450 +469,444 @@ export function App() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+      </div>
 
-        <div className="flex items-center mb-4 mt-12 sm:mt-0">
-          <Image
-            src="/logo.svg"
-            alt="Goods Logo"
-            width={140}
-            height={40}
-            priority
-            className="h-auto"
-          />
-        </div>
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        <div className="container mx-auto px-4 py-6">
+          {/* Search Bar */}
+          <div className="mb-8 relative">
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Buscar items..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-10"
+            />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                onClick={clearSearch}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
 
-        {/* Barra de búsqueda principal */}
-        <div className="mb-4 relative">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Buscar items..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-10"
-          />
+          {/* Resultados de búsqueda */}
           {searchTerm && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-              onClick={clearSearch}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <Card className="mb-4">
+              <CardHeader>
+                <CardTitle>Resultados de búsqueda</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {searchResults.length > 0 ? (
+                  <div className="max-h-[60vh] overflow-y-auto">
+                    <ul>
+                      {searchResults.map(result => (
+                        <li 
+                          key={result.item.id} 
+                          className="mb-2 cursor-pointer hover:bg-gray-100 p-2 rounded"
+                          onClick={() => openBox(result.boxId)}
+                        >
+                          <strong>{result.item.name}</strong>
+                          {result.item.description && ` - ${result.item.description}`}
+                          <br />
+                          <span className="text-sm text-gray-500">En la caja: {result.boxName}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <p>No se encontraron items.</p>
+                )}
+              </CardContent>
+            </Card>
           )}
-        </div>
 
-        {/* Resultados de búsqueda */}
-        {searchTerm && (
-          <Card className="mb-4">
+          {/* Formulario para agregar caja */}
+          <Card className="mb-4 bg-gradient-to-br from-green-50 to-amber-50 rounded-2xl">
             <CardHeader>
-              <CardTitle>Resultados de búsqueda</CardTitle>
+              <CardTitle>Agregar Nueva Caja</CardTitle>
             </CardHeader>
             <CardContent>
-              {searchResults.length > 0 ? (
-                <div className="max-h-[60vh] overflow-y-auto">
-                  <ul>
-                    {searchResults.map(result => (
-                      <li 
-                        key={result.item.id} 
-                        className="mb-2 cursor-pointer hover:bg-gray-100 p-2 rounded"
-                        onClick={() => openBox(result.boxId)}
-                      >
-                        <strong>{result.item.name}</strong>
-                        {result.item.description && ` - ${result.item.description}`}
-                        <br />
-                        <span className="text-sm text-gray-500">En la caja: {result.boxName}</span>
-                      </li>
-                    ))}
-                  </ul>
+              <div className="flex flex-col space-y-2">
+                {/* Formulario para agregar caja */}
+                <Input
+                  type="text"
+                  placeholder="Nombre de la caja"
+                  value={newBoxName}
+                  onChange={(e) => {
+                    setNewBoxName(e.target.value.slice(0, 14))
+                    setNewBoxNameError('')
+                    setShowNewBoxNameLimit(e.target.value.length >= 14)
+                  }}
+                  onKeyDown={(e) => e.key === 'Enter' && addBox()}
+                  maxLength={14}
+                />
+                <Input
+                  type="text"
+                  placeholder="Descripción de la caja"
+                  value={newBoxDescription}
+                  onChange={(e) => {
+                    setNewBoxDescription(e.target.value.slice(0, 54))
+                    setShowNewBoxDescriptionLimit(e.target.value.length >= 54)
+                  }}
+                  maxLength={54}
+                />
+                {showNewBoxDescriptionLimit && (
+                  <p className="text-sm text-red-500">Has alcanzado el límite de caracteres permitidos</p>
+                )}
+                {showNewBoxNameLimit && (
+                  <p className="text-sm text-red-500">Has alcanzado el límite de 14 caracteres</p>
+                )}
+                <div className="flex sm:hidden">
+                  <Button onClick={addBox} className="w-full">
+                    <PlusCircle className="h-4 w-4 mr-2" />
+                    Agregar Caja
+                  </Button>
                 </div>
-              ) : (
-                <p>No se encontraron items.</p>
-              )}
+                <div className="hidden sm:flex sm:justify-end">
+                  <Button onClick={addBox}>
+                    <PlusCircle className="h-4 w-4 mr-2" />
+                    Agregar Caja
+                  </Button>
+                </div>
+                {newBoxNameError && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{newBoxNameError}</AlertDescription>
+                  </Alert>
+                )}
+              </div>
             </CardContent>
           </Card>
-        )}
 
-        {/* Formulario para agregar caja */}
-        <Card className="mb-4 bg-gradient-to-br from-green-50 to-amber-50 rounded-2xl">
-          <CardHeader>
-            <CardTitle>Agregar Nueva Caja</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col space-y-2">
-              {/* Formulario para agregar caja */}
-              <Input
-                type="text"
-                placeholder="Nombre de la caja"
-                value={newBoxName}
-                onChange={(e) => {
-                  setNewBoxName(e.target.value.slice(0, 14))
-                  setNewBoxNameError('')
-                  setShowNewBoxNameLimit(e.target.value.length >= 14)
-                }}
-                onKeyDown={(e) => e.key === 'Enter' && addBox()}
-                maxLength={14}
-              />
-              <Input
-                type="text"
-                placeholder="Descripción de la caja"
-                value={newBoxDescription}
-                onChange={(e) => {
-                  setNewBoxDescription(e.target.value.slice(0, 54))
-                  setShowNewBoxDescriptionLimit(e.target.value.length >= 54)
-                }}
-                maxLength={54}
-              />
-              {showNewBoxDescriptionLimit && (
-                <p className="text-sm text-red-500">Has alcanzado el límite de caracteres permitidos</p>
-              )}
-              {showNewBoxNameLimit && (
-                <p className="text-sm text-red-500">Has alcanzado el límite de 14 caracteres</p>
-              )}
-              <div className="flex sm:hidden">
-                <Button onClick={addBox} className="w-full">
-                  <PlusCircle className="h-4 w-4 mr-2" />
-                  Agregar Caja
-                </Button>
-              </div>
-              <div className="hidden sm:flex sm:justify-end">
-                <Button onClick={addBox}>
-                  <PlusCircle className="h-4 w-4 mr-2" />
-                  Agregar Caja
-                </Button>
-              </div>
-              {newBoxNameError && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{newBoxNameError}</AlertDescription>
-                </Alert>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+          {/* Botones de ordenación */}
+          <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0 mb-4">
+            <Button 
+              variant="link" 
+              onClick={() => {
+                setBoxes([...boxes].sort((a, b) => a.name.localeCompare(b.name)));
+                setSortOrder('alphabetical');
+              }} 
+              className={`${sortOrder === 'alphabetical' ? 'underline' : ''} text-sm sm:text-base`}
+            >
+              Ordenar Alfabéticamente
+            </Button>
+            <Button 
+              variant="link" 
+              onClick={() => {
+                setBoxes([...boxes].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
+                setSortOrder('date');
+              }} 
+              className={`${sortOrder === 'date' ? 'underline' : ''} text-sm sm:text-base`}
+            >
+              Ordenar por Fecha de Creación
+            </Button>
+          </div>
 
-        {/* Botones de ordenación */}
-        <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0 mb-4">
-          <Button 
-            variant="link" 
-            onClick={() => {
-              setBoxes([...boxes].sort((a, b) => a.name.localeCompare(b.name)));
-              setSortOrder('alphabetical');
-            }} 
-            className={`${sortOrder === 'alphabetical' ? 'underline' : ''} text-sm sm:text-base`}
-          >
-            Ordenar Alfabéticamente
-          </Button>
-          <Button 
-            variant="link" 
-            onClick={() => {
-              setBoxes([...boxes].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
-              setSortOrder('date');
-            }} 
-            className={`${sortOrder === 'date' ? 'underline' : ''} text-sm sm:text-base`}
-          >
-            Ordenar por Fecha de Creación
-          </Button>
-        </div>
+          {/* Lista de cajas */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {isLoading ? (
+              // Mostrar 6 skeletons mientras carga
+              <>
+                {[...Array(6)].map((_, i) => (
+                  <BoxSkeleton key={i} />
+                ))}
+              </>
+            ) : (
+              // Mostrar las cajas cuando termina de cargar
+              boxes.map(box => (
+                <Card key={box.id} className="mb-2 sm:mb-4 bg-floral-white">
+                  <CardHeader className="p-4 sm:p-6">
+                    {editingBox === box.id ? (
+                      <div className="space-y-2">
+                        <Input
+                          type="text"
+                          value={editBoxName}
+                          onChange={(e) => {
+                            setEditBoxName(e.target.value.slice(0, 14))
+                            setEditBoxNameError('')
+                            setShowEditBoxNameLimit(e.target.value.length >= 14)
+                          }}
+                          placeholder={box.name}
+                          maxLength={14}
+                        />
+                        <Input
+                          type="text"
+                          value={editBoxDescription}
+                          onChange={(e) => {
+                            setEditBoxDescription(e.target.value.slice(0, 54))
+                            setShowEditBoxDescriptionLimit(e.target.value.length >= 54)
+                          }}
+                          placeholder="Descripción de la caja"
+                          maxLength={54}
+                        />
+                        {showEditBoxDescriptionLimit && (
+                          <p className="text-sm text-red-500">Has alcanzado el límite de caracteres permitidos</p>
+                        )}
+                        {showEditBoxNameLimit && (
+                          <p className="text-sm text-red-500">Has alcanzado el límite de 14 caracteres</p>
+                        )}
+                        <div className="flex justify-end space-x-2">
+                          <Button onClick={saveEditBox} size="sm">
+                            <Check className="h-4 w-4" />
+                          </Button>
+                          <Button onClick={cancelEditBox} variant="outline" size="sm">
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        {editBoxNameError && (
+                          <Alert variant="destructive">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>{editBoxNameError}</AlertDescription>
+                          </Alert>
+                        )}
+                      </div>
+                    ) : (
+                      <CardTitle className="flex justify-between items-center overflow-hidden">
+                        <div className="flex items-center">
+                          <span 
+                            className="box-name truncate max-w-[9.7rem] sm:max-w-[12.5rem] 2xl:max-w-[15.5rem]"
+                          >
+                            {box.name}
+                          </span>
+                          <Badge className="ml-3">{box.item_count} items</Badge>
+                        </div>
+                        <div>
+                          <Button onClick={() => startEditingBox(box)} variant="ghost" size="sm" className="mr-1 hover:bg-electric-blue">
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Button onClick={() => deleteBox(box)} variant="ghost" size="sm" className='hover:bg-electric-blue'>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardTitle>
+                    )}
+                  </CardHeader>
+                  <CardContent className="p-4 sm:p-6">
+                    {box.description && <p className="text-sm text-gray-500 mb-2">{box.description}</p>}
+                    <Button onClick={() => openBox(box.id)} className="mb-2">Ver Items</Button>
+                    
+                    {/* Mostrar los tres primeros items */}
+                    <ul className="space-y-1">
+                      {box.items && box.items.slice(0, 3).map(item => (
+                        <li key={item.id} className="text-sm text-gray-700">
+                          {item.name} {item.description && `- ${item.description}`}
+                        </li>
+                      ))}
+                      {box.items && box.items.length > 3 && (
+                        <li className="text-sm text-gray-500">...</li> // Puntos suspensivos si hay más de 3 items
+                      )}
+                    </ul>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
 
-        {/* Lista de cajas */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {isLoading ? (
-            // Mostrar 6 skeletons mientras carga
-            <>
-              {[...Array(6)].map((_, i) => (
-                <BoxSkeleton key={i} />
-              ))}
-            </>
-          ) : (
-            // Mostrar las cajas cuando termina de cargar
-            boxes.map(box => (
-              <Card key={box.id} className="mb-2 sm:mb-4 bg-floral-white">
-                <CardHeader className="p-4 sm:p-6">
-                  {editingBox === box.id ? (
-                    <div className="space-y-2">
-                      <Input
-                        type="text"
-                        value={editBoxName}
-                        onChange={(e) => {
-                          setEditBoxName(e.target.value.slice(0, 14))
-                          setEditBoxNameError('')
-                          setShowEditBoxNameLimit(e.target.value.length >= 14)
-                        }}
-                        placeholder={box.name}
-                        maxLength={14}
-                      />
-                      <Input
-                        type="text"
-                        value={editBoxDescription}
-                        onChange={(e) => {
-                          setEditBoxDescription(e.target.value.slice(0, 54))
-                          setShowEditBoxDescriptionLimit(e.target.value.length >= 54)
-                        }}
-                        placeholder="Descripción de la caja"
-                        maxLength={54}
-                      />
-                      {showEditBoxDescriptionLimit && (
-                        <p className="text-sm text-red-500">Has alcanzado el límite de caracteres permitidos</p>
-                      )}
-                      {showEditBoxNameLimit && (
-                        <p className="text-sm text-red-500">Has alcanzado el límite de 14 caracteres</p>
-                      )}
-                      <div className="flex justify-end space-x-2">
-                        <Button onClick={saveEditBox} size="sm">
-                          <Check className="h-4 w-4" />
-                        </Button>
-                        <Button onClick={cancelEditBox} variant="outline" size="sm">
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      {editBoxNameError && (
-                        <Alert variant="destructive">
-                          <AlertCircle className="h-4 w-4" />
-                          <AlertDescription>{editBoxNameError}</AlertDescription>
-                        </Alert>
-                      )}
-                    </div>
-                  ) : (
-                    <CardTitle className="flex justify-between items-center overflow-hidden">
-                      <div className="flex items-center">
-                        <span 
-                          className="box-name truncate max-w-[9.7rem] sm:max-w-[12.5rem] 2xl:max-w-[15.5rem]"
-                        >
-                          {box.name}
-                        </span>
-                        <Badge className="ml-3">{box.item_count} items</Badge>
-                      </div>
-                      <div>
-                        <Button onClick={() => startEditingBox(box)} variant="ghost" size="sm" className="mr-1 hover:bg-electric-blue">
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <Button onClick={() => deleteBox(box)} variant="ghost" size="sm" className='hover:bg-electric-blue'>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </CardTitle>
-                  )}
-                </CardHeader>
-                <CardContent className="p-4 sm:p-6">
-                  {box.description && <p className="text-sm text-gray-500 mb-2">{box.description}</p>}
-                  <Button onClick={() => openBox(box.id)} className="mb-2">Ver Items</Button>
-                  
-                  {/* Mostrar los tres primeros items */}
-                  <ul className="space-y-1">
-                    {box.items && box.items.slice(0, 3).map(item => (
-                      <li key={item.id} className="text-sm text-gray-700">
-                        {item.name} {item.description && `- ${item.description}`}
+          {/* Diálogo para ver items de la caja */}
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogContent className="w-[95vw] sm:w-[90vw] max-w-[800px] h-[90vh] sm:h-auto overflow-y-auto sm:rounded-xl">
+              <DialogHeader>
+                <DialogTitle className="flex justify-between items-center text-xl">
+                  {activeBox?.name}
+                  <Badge className="mr-4">{activeBox?.item_count} items</Badge>
+                </DialogTitle>
+                {activeBox?.description && (
+                  <DialogDescription>
+                    {activeBox.description}
+                  </DialogDescription>
+                )}
+              </DialogHeader>
+              <div className="mt-4 space-y-4">
+                {activeBox && activeBox.items && activeBox.items.length > 0 && (
+                  <div className="relative">
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Input
+                      type="text"
+                      placeholder="Buscar items en esta caja..."
+                      value={boxSearchTerm}
+                      onChange={(e) => setBoxSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                )}
+                {activeBox && activeBox.items && activeBox.items.length > 0 ? (
+                  <Button onClick={() => setIsAddingItem(true)} className="w-full">
+                    <PlusCircle className="h-4 w-4 mr-2" />
+                    Agregar Nuevo Item
+                  </Button>
+                ) : (
+                  <div className="space-y-2">
+                    <Input
+                      type="text"
+                      placeholder="Nombre del primer item"
+                      value={newItemName}
+                      onChange={(e) => {
+                        setNewItemName(e.target.value)
+                        setNewItemNameError('')
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && newItemName.trim()) {
+                          (document.querySelector('input[placeholder="Descripción del item"]') as HTMLInputElement)?.focus()
+                        }
+                      }}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Descripción del item"
+                      value={newItemDescription}
+                      onChange={(e) => setNewItemDescription(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && addItem()}
+                    />
+                    <Button onClick={addItem} className="w-full">Agregar Primer Item</Button>
+                    {newItemNameError && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>{newItemNameError}</AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                )}
+                {isAddingItem && (
+                  <div className="space-y-2">
+                    <Input
+                      type="text"
+                      placeholder="Nombre del item"
+                      value={newItemName}
+                      onChange={(e) => {
+                        setNewItemName(e.target.value)
+                        setNewItemNameError('')
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && newItemName.trim()) {
+                          (document.querySelector('input[placeholder="Descripción del item"]') as HTMLInputElement)?.focus()
+                        }
+                      }}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Descripción del item"
+                      value={newItemDescription}
+                      onChange={(e) => setNewItemDescription(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && addItem()}
+                    />
+                    <Button onClick={addItem}>Agregar Item</Button>
+                    {newItemNameError && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>{newItemNameError}</AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                )}
+                <div className="max-h-[50vh] overflow-y-auto">
+                  <ul className="space-y-2">
+                    {filteredBoxItems.map((item: Item) => (
+                      <li key={item.id} className="p-2 border rounded">
+                        {editingItem === item.id ? (
+                          <div className="space-y-2">
+                            <Input
+                              type="text"
+                              value={editItemName}
+                              onChange={(e) => {
+                                setEditItemName(e.target.value)
+                                setEditItemNameError('')
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && editItemName.trim()) {
+                                  (document.querySelector('input[value="' + editItemDescription + '"]') as HTMLInputElement)?.focus()
+                                }
+                              }}
+                              placeholder={item.name}
+                            />
+                            <Input
+                              type="text"
+                              value={editItemDescription}
+                              onChange={(e) => setEditItemDescription(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && saveEdit()}
+                              placeholder={item.description || "Descripción del item"}
+                            />
+                            <div className="flex space-x-2">
+                              <Button onClick={saveEdit} size="sm">
+                                <Check className="h-4 w-4" />
+                              </Button>
+                              <Button onClick={cancelEdit} variant="outline" size="sm">
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            {editItemNameError && (
+                              <Alert variant="destructive">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertDescription>{editItemNameError}</AlertDescription>
+                              </Alert>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="font-semibold">{item.name}</span>
+                              <br />
+                              <span className="text-sm text-gray-500">{item.description}</span>
+                            </div>
+                            <div>
+                              <Button onClick={() => startEditing(item)} variant="ghost" size="sm" className="mr-1 hover:bg-electric-blue">
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                              <Button onClick={() => {
+                                setItemToDelete(item)
+                                setIsDeleteItemDialogOpen(true)
+                              }} variant="ghost" size="sm" className='hover:bg-electric-blue'>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </li>
                     ))}
-                    {box.items && box.items.length > 3 && (
-                      <li className="text-sm text-gray-500">...</li> // Puntos suspensivos si hay más de 3 items
-                    )}
                   </ul>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
-
-        {/* Diálogo para ver items de la caja */}
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="w-[95vw] sm:w-[90vw] max-w-[800px] h-[90vh] sm:h-auto overflow-y-auto sm:rounded-xl">
-            <DialogHeader>
-              <DialogTitle className="flex justify-between items-center text-xl">
-                {activeBox?.name}
-                <Badge className="mr-4">{activeBox?.item_count} items</Badge>
-              </DialogTitle>
-              {activeBox?.description && (
-                <DialogDescription>
-                  {activeBox.description}
-                </DialogDescription>
-              )}
-            </DialogHeader>
-            <div className="mt-4 space-y-4">
-              {activeBox && activeBox.items && activeBox.items.length > 0 && (
-                <div className="relative">
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Buscar items en esta caja..."
-                    value={boxSearchTerm}
-                    onChange={(e) => setBoxSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
                 </div>
-              )}
-              {activeBox && activeBox.items && activeBox.items.length > 0 ? (
-                <Button onClick={() => setIsAddingItem(true)} className="w-full">
-                  <PlusCircle className="h-4 w-4 mr-2" />
-                  Agregar Nuevo Item
-                </Button>
-              ) : (
-                <div className="space-y-2">
-                  <Input
-                    type="text"
-                    placeholder="Nombre del primer item"
-                    value={newItemName}
-                    onChange={(e) => {
-                      setNewItemName(e.target.value)
-                      setNewItemNameError('')
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && newItemName.trim()) {
-                        (document.querySelector('input[placeholder="Descripción del item"]') as HTMLInputElement)?.focus()
-                      }
-                    }}
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Descripción del item"
-                    value={newItemDescription}
-                    onChange={(e) => setNewItemDescription(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && addItem()}
-                  />
-                  <Button onClick={addItem} className="w-full">Agregar Primer Item</Button>
-                  {newItemNameError && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>{newItemNameError}</AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-              )}
-              {isAddingItem && (
-                <div className="space-y-2">
-                  <Input
-                    type="text"
-                    placeholder="Nombre del item"
-                    value={newItemName}
-                    onChange={(e) => {
-                      setNewItemName(e.target.value)
-                      setNewItemNameError('')
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && newItemName.trim()) {
-                        (document.querySelector('input[placeholder="Descripción del item"]') as HTMLInputElement)?.focus()
-                      }
-                    }}
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Descripción del item"
-                    value={newItemDescription}
-                    onChange={(e) => setNewItemDescription(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && addItem()}
-                  />
-                  <Button onClick={addItem}>Agregar Item</Button>
-                  {newItemNameError && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>{newItemNameError}</AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-              )}
-              <div className="max-h-[50vh] overflow-y-auto">
-                <ul className="space-y-2">
-                  {filteredBoxItems.map((item: Item) => (
-                    <li key={item.id} className="p-2 border rounded">
-                      {editingItem === item.id ? (
-                        <div className="space-y-2">
-                          <Input
-                            type="text"
-                            value={editItemName}
-                            onChange={(e) => {
-                              setEditItemName(e.target.value)
-                              setEditItemNameError('')
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && editItemName.trim()) {
-                                (document.querySelector('input[value="' + editItemDescription + '"]') as HTMLInputElement)?.focus()
-                              }
-                            }}
-                            placeholder={item.name}
-                          />
-                          <Input
-                            type="text"
-                            value={editItemDescription}
-                            onChange={(e) => setEditItemDescription(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && saveEdit()}
-                            placeholder={item.description || "Descripción del item"}
-                          />
-                          <div className="flex space-x-2">
-                            <Button onClick={saveEdit} size="sm">
-                              <Check className="h-4 w-4" />
-                            </Button>
-                            <Button onClick={cancelEdit} variant="outline" size="sm">
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                          {editItemNameError && (
-                            <Alert variant="destructive">
-                              <AlertCircle className="h-4 w-4" />
-                              <AlertDescription>{editItemNameError}</AlertDescription>
-                            </Alert>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <span className="font-semibold">{item.name}</span>
-                            <br />
-                            <span className="text-sm text-gray-500">{item.description}</span>
-                          </div>
-                          <div>
-                            <Button onClick={() => startEditing(item)} variant="ghost" size="sm" className="mr-1 hover:bg-electric-blue">
-                              <Edit2 className="h-4 w-4" />
-                            </Button>
-                            <Button onClick={() => {
-                              setItemToDelete(item)
-                              setIsDeleteItemDialogOpen(true)
-                            }} variant="ghost" size="sm" className='hover:bg-electric-blue'>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
               </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
 
-        {/* Diálogo de confirmación para eliminar caja */}
-        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Confirmar eliminación</DialogTitle>
-              <DialogDescription>
-                Está seguro de que desea eliminar la caja &quot;{boxToDelete?.name}&quot;? Esta acción eliminará todos los items dentro de la caja y no se puede deshacer.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button onClick={() => setIsDeleteDialogOpen(false)} variant="outline">Cancelar</Button>
-              <Button onClick={confirmDeleteBox} variant="destructive">Eliminar</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+          {/* Diálogo de confirmación para eliminar caja */}
+          <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Confirmar eliminación</DialogTitle>
+                <DialogDescription>
+                  Está seguro de que desea eliminar la caja &quot;{boxToDelete?.name}&quot;? Esta acción eliminará todos los items dentro de la caja y no se puede deshacer.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button onClick={() => setIsDeleteDialogOpen(false)} variant="outline">Cancelar</Button>
+                <Button onClick={confirmDeleteBox} variant="destructive">Eliminar</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
-        {/* Diálogo de confirmación para eliminar item */}
-        <Dialog open={isDeleteItemDialogOpen} onOpenChange={setIsDeleteItemDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Confirmar eliminación de item</DialogTitle>
-              <DialogDescription>
-                ¿Está seguro de que desea eliminar el item &quot;{itemToDelete?.name}&quot;? Esta acción no se puede deshacer.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button onClick={() => setIsDeleteItemDialogOpen(false)} variant="outline">Cancelar</Button>
-              <Button onClick={confirmDeleteItem} variant="destructive">Eliminar</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+          {/* Diálogo de confirmación para eliminar item */}
+          <Dialog open={isDeleteItemDialogOpen} onOpenChange={setIsDeleteItemDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Confirmar eliminación de item</DialogTitle>
+                <DialogDescription>
+                  ¿Está seguro de que desea eliminar el item &quot;{itemToDelete?.name}&quot;? Esta acción no se puede deshacer.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button onClick={() => setIsDeleteItemDialogOpen(false)} variant="outline">Cancelar</Button>
+                <Button onClick={confirmDeleteItem} variant="destructive">Eliminar</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
     </div>
   )
