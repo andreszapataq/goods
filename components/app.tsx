@@ -473,7 +473,7 @@ export function App() {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto sm:px-8 2xl:px-4 py-6">
           {/* Search Bar */}
           <div className="mb-8 relative">
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -671,7 +671,7 @@ export function App() {
                       <CardTitle className="flex justify-between items-center overflow-hidden">
                         <div className="flex items-center">
                           <span 
-                            className="box-name truncate max-w-[9.7rem] sm:max-w-[12.5rem] 2xl:max-w-[15.5rem]"
+                            className="box-name truncate max-w-[9.7rem] sm:max-w-[11rem] 2xl:max-w-[15.5rem]"
                           >
                             {box.name}
                           </span>
