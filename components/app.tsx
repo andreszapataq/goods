@@ -436,8 +436,8 @@ export function App() {
 
   return (
     <div className="flex h-screen">
-      {/* Desktop Sidebar - hidden en móvil */}
-      <div className="hidden md:flex w-[200px] border-r bg-white flex-col justify-between p-4">
+      {/* Desktop Sidebar - ahora fixed */}
+      <div className="hidden md:flex fixed top-0 left-0 h-full w-[200px] border-r bg-white flex-col justify-between p-4">
         <div className="flex justify-center">
           <Image
             src="/logo.svg"
@@ -471,8 +471,8 @@ export function App() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col h-screen pl-8 pr-8">
+      {/* Main Content - ajustado con padding-left */}
+      <div className="flex-1 flex flex-col h-screen pl-8 pr-8 md:pl-[224px]">
         <div className="max-w-[1400px] w-full mx-auto">
           {/* Mobile Header */}
           <div className="md:hidden flex items-center justify-between py-4">
