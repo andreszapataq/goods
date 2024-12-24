@@ -770,7 +770,7 @@ export function App() {
 
             {/* Diálogo para ver items de la caja */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogContent className="w-[95vw] sm:w-[90vw] max-w-[800px] h-[90vh] sm:h-auto overflow-y-auto sm:rounded-xl">
+              <DialogContent className="w-[95vw] sm:w-[90vw] max-w-[800px] h-[90vh] sm:h-[85vh] overflow-y-auto sm:rounded-xl p-6">
                 <DialogHeader>
                   <DialogTitle className="flex justify-between items-center text-xl">
                     {activeBox?.name}
@@ -936,7 +936,7 @@ export function App() {
 
             {/* Diálogo de confirmación para eliminar caja */}
             <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-              <DialogContent>
+              <DialogContent className="max-w-md p-6">
                 <DialogHeader>
                   <DialogTitle>Confirmar eliminación</DialogTitle>
                   <DialogDescription>
@@ -952,7 +952,7 @@ export function App() {
 
             {/* Diálogo de confirmación para eliminar item */}
             <Dialog open={isDeleteItemDialogOpen} onOpenChange={setIsDeleteItemDialogOpen}>
-              <DialogContent>
+              <DialogContent className="max-w-md p-6">
                 <DialogHeader>
                   <DialogTitle>Confirmar eliminación de item</DialogTitle>
                   <DialogDescription>
