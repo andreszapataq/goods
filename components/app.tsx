@@ -531,20 +531,20 @@ export function App() {
           {/* Rest of the content */}
           <div className="py-6 px sm:px-8 2xl:px-4 flex-none">
             {/* Search Bar */}
-            <div className="mb-8 relative">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <div className="mb-8 relative max-w-2xl mx-auto">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <Input
                 type="text"
                 placeholder="Buscar items..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-10"
+                className="pl-11 pr-10 h-11 text-base"
               />
               {searchTerm && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 p-1"
                   onClick={clearSearch}
                 >
                   <X className="h-4 w-4" />
