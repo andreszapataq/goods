@@ -454,17 +454,17 @@ export function App() {
         <div className="mt-auto">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full flex items-center justify-start gap-2">
+              <Button variant="ghost" className="w-full flex items-center justify-start gap-2 hover:bg-gray-100">
                 <UserIcon className="h-5 w-5" />
                 <span className="text-sm">{userData.name}</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56">
-              <DropdownMenuItem className="flex flex-col items-start">
+            <DropdownMenuContent align="start" className="w-[240px]">
+              <DropdownMenuItem className="flex flex-col items-start p-3">
                 <span className="font-medium">{userData.name}</span>
                 <span className="text-sm text-gray-500">{userData.email}</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+              <DropdownMenuItem onClick={handleSignOut} className="text-red-600 p-3">
                 <LogOut className="mr-2 h-4 w-4" />
                 Cerrar sesión
               </DropdownMenuItem>
