@@ -641,14 +641,14 @@ export function App() {
             </Card>
 
             {/* Botones de ordenación */}
-            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0 mb-4">
+            <div className="flex flex-col sm:flex-row sm:justify-center gap-2 sm:gap-6 mb-8">
               <Button 
                 variant="link" 
                 onClick={() => {
                   setBoxes([...boxes].sort((a, b) => a.name.localeCompare(b.name)));
                   setSortOrder('alphabetical');
                 }} 
-                className={`${sortOrder === 'alphabetical' ? 'underline' : ''} text-sm sm:text-base`}
+                className={`${sortOrder === 'alphabetical' ? 'underline font-medium' : ''} text-sm sm:text-base`}
               >
                 Ordenar Alfabéticamente
               </Button>
@@ -658,7 +658,7 @@ export function App() {
                   setBoxes([...boxes].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
                   setSortOrder('date');
                 }} 
-                className={`${sortOrder === 'date' ? 'underline' : ''} text-sm sm:text-base`}
+                className={`${sortOrder === 'date' ? 'underline font-medium' : ''} text-sm sm:text-base`}
               >
                 Ordenar por Fecha de Creación
               </Button>
