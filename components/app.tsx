@@ -587,12 +587,12 @@ export function App() {
             )}
 
             {/* Formulario para agregar caja */}
-            <Card className="mb-4 bg-gradient-to-br from-green-50 to-amber-50 rounded-2xl">
-              <CardHeader>
+            <Card className="mb-8 bg-gradient-to-br from-green-50 to-amber-50 rounded-xl shadow-sm max-w-2xl mx-auto">
+              <CardHeader className="p-6">
                 <CardTitle>Agregar Nueva Caja</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-col space-y-2">
+              <CardContent className="px-6 pb-6">
+                <div className="flex flex-col space-y-3">
                   {/* Formulario para agregar caja */}
                   <Input
                     type="text"
@@ -605,6 +605,7 @@ export function App() {
                     }}
                     onKeyDown={(e) => e.key === 'Enter' && addBox()}
                     maxLength={14}
+                    className="h-11"
                   />
                   <Input
                     type="text"
@@ -615,6 +616,7 @@ export function App() {
                       setShowNewBoxDescriptionLimit(e.target.value.length >= 54)
                     }}
                     maxLength={54}
+                    className="h-11"
                   />
                   {showNewBoxDescriptionLimit && (
                     <p className="text-sm text-red-500">Has alcanzado el límite de caracteres permitidos</p>
@@ -622,14 +624,8 @@ export function App() {
                   {showNewBoxNameLimit && (
                     <p className="text-sm text-red-500">Has alcanzado el límite de 14 caracteres</p>
                   )}
-                  <div className="flex sm:hidden">
-                    <Button onClick={addBox} className="w-full">
-                      <PlusCircle className="h-4 w-4 mr-2" />
-                      Agregar Caja
-                    </Button>
-                  </div>
-                  <div className="hidden sm:flex sm:justify-end">
-                    <Button onClick={addBox}>
+                  <div className="flex sm:justify-end pt-2">
+                    <Button onClick={addBox} className="w-full sm:w-auto">
                       <PlusCircle className="h-4 w-4 mr-2" />
                       Agregar Caja
                     </Button>
