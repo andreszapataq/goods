@@ -527,7 +527,7 @@ export function App() {
           </div>
 
           {/* Rest of the content */}
-          <div className="py-6 flex-none">
+          <div className="py-6 px sm:px-8 2xl:px-4 flex-none">
             {/* Search Bar */}
             <div className="mb-8 relative">
               <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -725,7 +725,7 @@ export function App() {
                         <CardTitle className="flex justify-between items-center overflow-hidden">
                           <div className="flex items-center">
                             <span 
-                              className="box-name truncate max-w-[9.7rem] sm:max-w-[11rem] 2xl:max-w-[15.5rem]"
+                              className="box-name truncate max-w-[7.7rem] sm:max-w-[9.7rem] 2xl:max-w-[15rem]"
                             >
                               {box.name}
                             </span>
