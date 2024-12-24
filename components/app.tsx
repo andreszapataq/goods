@@ -473,11 +473,11 @@ export function App() {
         </div>
       </div>
 
-      {/* Main Content - ajustado con padding-left */}
-      <div className="flex-1 flex flex-col h-screen pl-8 pr-8 md:pl-[224px]">
+      {/* Main Content - ajustado con padding y márgenes */}
+      <div className="flex-1 flex flex-col h-screen px-4 sm:px-6 md:px-8 md:pl-[264px] py-6">
         <div className="max-w-[1400px] w-full mx-auto">
           {/* Mobile Header */}
-          <div className="md:hidden flex items-center justify-between py-4">
+          <div className="md:hidden flex items-center justify-between py-4 mb-6">
             <Image
               src="/logo.svg"
               alt="Goods Logo"
@@ -488,11 +488,11 @@ export function App() {
             />
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="hover:bg-gray-100">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[200px] p-4 flex flex-col">
+              <SheetContent side="right" className="w-[240px] p-6 flex flex-col">
                 <div className="flex justify-center">
                   <Image
                     src="/logo.svg"
