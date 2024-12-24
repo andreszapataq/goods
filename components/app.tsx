@@ -665,7 +665,7 @@ export function App() {
             </div>
 
             {/* Lista de cajas */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {isLoading ? (
                 // Mostrar 6 skeletons mientras carga
                 <>
@@ -676,8 +676,8 @@ export function App() {
               ) : (
                 // Mostrar las cajas cuando termina de cargar
                 boxes.map(box => (
-                  <Card key={box.id} className="mb-2 sm:mb-4 bg-floral-white">
-                    <CardHeader className="p-4 sm:p-6">
+                  <Card key={box.id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
+                    <CardHeader className="p-5">
                       {editingBox === box.id ? (
                         <div className="space-y-2">
                           <Input
@@ -723,41 +723,45 @@ export function App() {
                           )}
                         </div>
                       ) : (
-                        <CardTitle className="flex justify-between items-center overflow-hidden">
-                          <div className="flex items-center">
+                        <CardTitle className="flex justify-between items-center">
+                          <div className="flex items-center gap-3 min-w-0">
                             <span 
-                              className="box-name truncate max-w-[7.7rem] sm:max-w-[9.7rem] 2xl:max-w-[15rem]"
+                              className="box-name truncate max-w-[9rem] sm:max-w-[9.2rem] 2xl:max-w-[14.5rem]"
                             >
                               {box.name}
                             </span>
-                            <Badge className="ml-3">{box.item_count} items</Badge>
+                            <Badge className="shrink-0">{box.item_count} items</Badge>
                           </div>
-                          <div>
-                            <Button onClick={() => startEditingBox(box)} variant="ghost" size="sm" className="mr-1 hover:bg-electric-blue">
+                          <div className="flex shrink-0 ml-2">
+                            <Button onClick={() => startEditingBox(box)} variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-electric-blue">
                               <Edit2 className="h-4 w-4" />
                             </Button>
-                            <Button onClick={() => deleteBox(box)} variant="ghost" size="sm" className='hover:bg-electric-blue'>
+                            <Button onClick={() => deleteBox(box)} variant="ghost" size="sm" className='h-8 w-8 p-0 hover:bg-electric-blue'>
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </CardTitle>
                       )}
                     </CardHeader>
-                    <CardContent className="p-4 sm:p-6">
-                      {box.description && <p className="text-sm text-gray-500 mb-2">{box.description}</p>}
-                      <Button onClick={() => openBox(box.id)} className="mb-2">Ver Items</Button>
+                    <CardContent className="p-5">
+                      {box.description && <p className="text-sm text-gray-500 mb-4 line-clamp-2">{box.description}</p>}
+                      <Button onClick={() => openBox(box.id)} className="mb-4">Ver Items</Button>
                       
                       {/* Mostrar los tres primeros items */}
-                      <ul className="space-y-1">
-                        {box.items && box.items.slice(0, 3).map(item => (
-                          <li key={item.id} className="text-sm text-gray-700">
-                            {item.name} {item.description && `- ${item.description}`}
-                          </li>
-                        ))}
-                        {box.items && box.items.length > 3 && (
-                          <li className="text-sm text-gray-500">...</li> // Puntos suspensivos si hay más de 3 items
-                        )}
-                      </ul>
+                      {box.items && box.items.length > 0 && (
+                    <ul className="space-y-1">
+                      {box.items.slice(0, 3).map(item => (
+                        <li key={item.id} className="text-sm text-gray-600 truncate">
+                          • {item.name}
+                        </li>
+                      ))}
+                      {box.items.length > 3 && (
+                        <li className="text-sm text-gray-400">
+                          • {box.items.length - 3} items más...
+                        </li>
+                      )}
+                    </ul>
+                  )}
                     </CardContent>
                   </Card>
                 ))
