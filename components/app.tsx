@@ -554,31 +554,34 @@ export function App() {
 
             {/* Resultados de búsqueda */}
             {searchTerm && (
-              <Card className="mb-4">
-                <CardHeader>
+              <Card className="mb-8 max-w-2xl mx-auto">
+                <CardHeader className='p-6'>
                   <CardTitle>Resultados de búsqueda</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-6 pb-6">
                   {searchResults.length > 0 ? (
-                    <div className="max-h-[60vh] overflow-y-auto">
-                      <ul>
+                    <div className="max-h-[50vh] overflow-y-auto">
+                      <ul className="space-y-3">
                         {searchResults.map(result => (
                           <li 
-                            key={result.item.id} 
-                            className="mb-2 cursor-pointer hover:bg-gray-100 p-2 rounded"
-                            onClick={() => openBox(result.boxId)}
-                          >
-                            <strong>{result.item.name}</strong>
-                            {result.item.description && ` - ${result.item.description}`}
-                            <br />
-                            <span className="text-sm text-gray-500">En la caja: {result.boxName}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : (
-                    <p>No se encontraron items.</p>
-                  )}
+                          key={result.item.id} 
+                          className="p-3 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors"
+                          onClick={() => openBox(result.boxId)}
+                        >
+                          <strong className="text-base">{result.item.name}</strong>
+                          {result.item.description && 
+                            <p className="text-gray-600 mt-1">{result.item.description}</p>
+                          }
+                          <span className="text-sm text-gray-500 mt-1 block">
+                            En la caja: {result.boxName}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No se encontraron items.</p>
+                )}
                 </CardContent>
               </Card>
             )}
