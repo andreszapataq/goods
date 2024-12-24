@@ -757,7 +757,7 @@ export function App() {
                       ))}
                       {box.items.length > 3 && (
                         <li className="text-sm text-gray-400">
-                          • {box.items.length - 3} items más...
+                          • {box.items.length - 3} {box.items.length - 3 === 1 ? 'item más...' : 'items más...'}
                         </li>
                       )}
                     </ul>
