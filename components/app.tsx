@@ -438,15 +438,17 @@ export function App() {
     <div className="flex h-screen bg-gray-50">
       {/* Desktop Sidebar - ahora fixed */}
       <div className="hidden md:flex fixed top-0 left-0 h-full w-[240px] border-r bg-white flex-col justify-between p-6 shadow-sm">
-        <div className="flex justify-center">
-          <Image
-            src="/logo.svg"
-            alt="Goods Logo"
-            width={100}
-            height={30}
-            priority
-            className="h-auto mb-8"
-          />
+        <div className="flex flex-col">
+          <div className="flex justify-center mb-10">
+            <Image
+              src="/logo.svg"
+              alt="Goods Logo"
+              width={120}
+              height={36}
+              priority
+              className="h-auto"
+            />
+          </div>
         </div>
         
         <div className="mt-auto">
