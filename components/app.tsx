@@ -296,7 +296,7 @@ export function App() {
         setIsAddingItem(false)
       }
     } else if (!newItemName.trim()) {
-      setNewItemNameError('Please enter a name for the item.')
+      setNewItemNameError('Por favor ingrese un nombre para el item.')
     }
   }
 
