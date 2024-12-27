@@ -550,41 +550,41 @@ export function App() {
                   <X className="h-4 w-4" />
                 </Button>
               )}
-            </div>
 
-            {/* Resultados de búsqueda */}
-            {searchTerm && (
-              <Card className="mb-8 max-w-2xl mx-auto">
-                <CardHeader className='p-6'>
-                  <CardTitle>Resultados de búsqueda</CardTitle>
-                </CardHeader>
-                <CardContent className="px-6 pb-6">
-                  {searchResults.length > 0 ? (
-                    <div className="max-h-[50vh] overflow-y-auto">
-                      <ul className="space-y-3">
-                        {searchResults.map(result => (
-                          <li 
-                          key={result.item.id} 
-                          className="p-3 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors"
-                          onClick={() => openBox(result.boxId)}
-                        >
-                          <strong className="text-base">{result.item.name}</strong>
-                          {result.item.description && 
-                            <p className="text-gray-600 mt-1">{result.item.description}</p>
-                          }
-                          <span className="text-sm text-gray-500 mt-1 block">
-                            En la caja: {result.boxName}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No se encontraron items.</p>
-                )}
-                </CardContent>
-              </Card>
-            )}
+              {/* Resultados de búsqueda - ahora con posición absoluta */}
+              {searchTerm && (
+                <Card className="absolute top-full left-0 right-0 mt-2 z-50 shadow-lg">
+                  <CardHeader className="p-6">
+                    <CardTitle>Resultados de búsqueda</CardTitle>
+                  </CardHeader>
+                  <CardContent className="px-6 pb-6">
+                    {searchResults.length > 0 ? (
+                      <div className="max-h-[31vh] overflow-y-auto">
+                        <ul className="space-y-3">
+                          {searchResults.map(result => (
+                            <li 
+                              key={result.item.id} 
+                              className="p-3 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors"
+                              onClick={() => openBox(result.boxId)}
+                            >
+                              <strong className="text-base">{result.item.name}</strong>
+                              {result.item.description && 
+                                <p className="text-gray-600 mt-1">{result.item.description}</p>
+                              }
+                              <span className="text-sm text-gray-500 mt-1 block">
+                                En la caja: {result.boxName}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      <p className="text-gray-500">No se encontraron items.</p>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+            </div>
 
             {/* Formulario para agregar caja */}
             <Card className="mb-8 bg-gradient-to-br from-green-50 to-amber-50 rounded-xl shadow-sm max-w-2xl mx-auto">
