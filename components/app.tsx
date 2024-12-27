@@ -772,70 +772,77 @@ export function App() {
 
             {/* Diálogo para ver items de la caja */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogContent className="w-[95vw] sm:w-[90vw] max-w-[800px] h-[90vh] sm:h-[85vh] overflow-y-auto sm:rounded-xl p-6">
-                <DialogHeader>
+              <DialogContent className="w-[95vw] sm:w-[90vw] max-w-[800px] h-[90vh] sm:h-[85vh] flex flex-col sm:rounded-xl p-6">
+                <DialogHeader className="flex-none">
                   <DialogTitle className="flex justify-between items-center text-xl">
                     {activeBox?.name}
                     <Badge className="mr-4">{activeBox?.item_count} items</Badge>
                   </DialogTitle>
-                  {activeBox?.description && (
-                    <DialogDescription>
-                      {activeBox.description}
-                    </DialogDescription>
-                  )}
                 </DialogHeader>
-                <div className="mt-4 space-y-4">
-                  {activeBox && activeBox.items && activeBox.items.length > 0 && (
-                    <div className="relative">
-                      <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                      <Input
-                        type="text"
-                        placeholder="Buscar items en esta caja..."
-                        value={boxSearchTerm}
-                        onChange={(e) => setBoxSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                  )}
-                  {activeBox && activeBox.items && activeBox.items.length > 0 ? (
-                    <Button onClick={() => setIsAddingItem(true)} className="w-full">
-                      <PlusCircle className="h-4 w-4 mr-2" />
-                      Agregar Nuevo Item
-                    </Button>
-                  ) : (
-                    <div className="space-y-2">
-                      <Input
-                        type="text"
-                        placeholder="Nombre del primer item"
-                        value={newItemName}
-                        onChange={(e) => {
-                          setNewItemName(e.target.value)
-                          setNewItemNameError('')
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && newItemName.trim()) {
-                            (document.querySelector('input[placeholder="Descripción del item"]') as HTMLInputElement)?.focus()
-                          }
-                        }}
-                      />
-                      <Input
-                        type="text"
-                        placeholder="Descripción del item"
-                        value={newItemDescription}
-                        onChange={(e) => setNewItemDescription(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && addItem()}
-                      />
-                      <Button onClick={addItem} className="w-full">Agregar Primer Item</Button>
-                      {newItemNameError && (
-                        <Alert variant="destructive">
-                          <AlertCircle className="h-4 w-4" />
-                          <AlertDescription>{newItemNameError}</AlertDescription>
-                        </Alert>
-                      )}
-                    </div>
-                  )}
+                
+                {/* Descripción de la caja */}
+                <div className="flex-none min-h-[40px] text-sm text-gray-500">
+                  {activeBox?.description}
+                </div>
+                
+                {/* Contenedor principal */}
+                <div className="flex flex-col flex-1 min-h-0"> {/* min-h-0 es crucial para el scroll */}
+                  {/* Formulario de primer item o barra de búsqueda - siempre visible */}
+                  <div className="flex-none mb-4"> {/* flex-none para que no se encoja */}
+                    {activeBox && (!activeBox.items || activeBox.items.length === 0) ? (
+                      <div className="space-y-3">
+                        <Input
+                          type="text"
+                          placeholder="Nombre del primer item"
+                          value={newItemName}
+                          onChange={(e) => {
+                            setNewItemName(e.target.value)
+                            setNewItemNameError('')
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && newItemName.trim()) {
+                              (document.querySelector('input[placeholder="Descripción del item"]') as HTMLInputElement)?.focus()
+                            }
+                          }}
+                        />
+                        <Input
+                          type="text"
+                          placeholder="Descripción del item"
+                          value={newItemDescription}
+                          onChange={(e) => setNewItemDescription(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && addItem()}
+                        />
+                        <Button onClick={addItem} className="w-full">Agregar Primer Item</Button>
+                        {newItemNameError && (
+                          <Alert variant="destructive">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>{newItemNameError}</AlertDescription>
+                          </Alert>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="relative mb-4">
+                          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                          <Input
+                            type="text"
+                            placeholder="Buscar items en esta caja..."
+                            value={boxSearchTerm}
+                            onChange={(e) => setBoxSearchTerm(e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+                        <Button onClick={() => setIsAddingItem(true)} className="w-full">
+                          <PlusCircle className="h-4 w-4 mr-2" />
+                          Agregar Nuevo Item
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Formulario para agregar nuevo item - si está activo */}
                   {isAddingItem && (
-                    <div className="space-y-2">
+                    <div className="flex-none space-y-2 mb-6"> {/* Aumentado el margen inferior */}
                       <Input
                         type="text"
                         placeholder="Nombre del item"
@@ -866,10 +873,15 @@ export function App() {
                       )}
                     </div>
                   )}
-                  <div className="max-h-[50vh] overflow-y-auto">
-                    <ul className="space-y-2">
+
+                  {/* Separador visual */}
+                  <div className="flex-none h-px bg-gray-100 mb-6"></div>
+
+                  {/* Lista de items con scroll */}
+                  <div className="flex-1 overflow-y-auto min-h-0"> {/* min-h-0 permite que el scroll funcione */}
+                    <ul className="space-y-3"> {/* Aumentado el espacio entre items */}
                       {filteredBoxItems.map((item: Item) => (
-                        <li key={item.id} className="p-2 border rounded">
+                        <li key={item.id} className="p-3 border rounded"> {/* Aumentado el padding */}
                           {editingItem === item.id ? (
                             <div className="space-y-2">
                               <Input
