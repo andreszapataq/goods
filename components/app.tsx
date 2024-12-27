@@ -744,7 +744,9 @@ export function App() {
                       )}
                     </CardHeader>
                     <CardContent className="p-5">
-                      {box.description && <p className="text-sm text-gray-500 mb-4 line-clamp-2">{box.description}</p>}
+                      <div className="mt-2 min-h-[3rem]">
+                        {box.description && <p className="text-sm text-gray-500 mb-4 line-clamp-2">{box.description}</p>}
+                      </div>
                       <Button onClick={() => openBox(box.id)} className="mb-4">Ver Items</Button>
                       
                       {/* Mostrar los tres primeros items */}
