@@ -77,3 +77,30 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Prevenir zoom en inputs en móvil */
+@media (max-width: 640px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
+/* Mejorar la apariencia de los inputs */
+.input-no-zoom {
+  -webkit-text-size-adjust: 100%;
+  font-size: 16px !important;
+}
+
+/* Animaciones mejoradas para el diálogo */
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.dialog-animation {
+  animation: slideInFromBottom 0.3s ease-out;
+}
