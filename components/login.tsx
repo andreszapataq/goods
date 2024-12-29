@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Box, Eye, EyeOff, Key, Sparkles } from "lucide-react"
 import { supabase } from '@/utils/supabase'
+import Image from 'next/image'
 
 const features = [
   { icon: <Sparkles className="h-4 w-4" />, text: "Rastrea tus pertenencias" },
@@ -90,6 +91,16 @@ export default function Component() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
+        <div className="flex justify-center pt-8">
+          <Image
+            src="/logo.svg"
+            alt="Goods Logo"
+            width={120}
+            height={36}
+            priority
+            className="h-auto"
+          />
+        </div>
         <CardHeader className="space-y-1">
           <CardTitle className="text-3xl font-heading">{isLogin ? "Iniciar sesión" : "Registrarse"}</CardTitle>
           <CardDescription>
