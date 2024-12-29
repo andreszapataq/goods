@@ -11,9 +11,9 @@ import { supabase } from '@/utils/supabase'
 import Image from 'next/image'
 
 const features = [
-  { icon: <Sparkles className="h-4 w-4" />, text: "Rastrea tus pertenencias" },
-  { icon: <Box className="h-4 w-4" />, text: "Organiza por cajas" },
-  { icon: <Key className="h-4 w-4" />, text: "Seguro y privado" },
+  { icon: <Sparkles className="h-4 w-4 text-castleton-green" />, text: "Rastrea tus pertenencias" },
+  { icon: <Box className="h-4 w-4 text-castleton-green" />, text: "Organiza por cajas" },
+  { icon: <Key className="h-4 w-4 text-castleton-green" />, text: "Seguro y privado" },
 ]
 
 export default function Component() {
