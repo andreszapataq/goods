@@ -569,7 +569,7 @@ export function App() {
                             >
                               <strong className="text-base">{result.item.name}</strong>
                               {result.item.description && 
-                                <p className="text-gray-600 mt-1">{result.item.description}</p>
+                                <p className="text-sm italic text-gray-600 mt-1">{result.item.description}</p>
                               }
                               <span className="text-sm text-gray-500 mt-1 block">
                                 En la caja: {result.boxName}
@@ -772,7 +772,7 @@ export function App() {
 
             {/* Diálogo para ver items de la caja */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogContent className="w-[95vw] sm:w-[90vw] max-w-[800px] h-[90vh] sm:h-[85vh] flex flex-col sm:rounded-xl p-6">
+              <DialogContent className="w-[95vw] sm:w-[90vw] max-w-[800px] h-[90vh] sm:h-[85vh] flex flex-col rounded-xl p-6">
                 <DialogHeader className="flex-none">
                   <DialogTitle className="flex justify-between items-center text-xl">
                     {activeBox?.name}
