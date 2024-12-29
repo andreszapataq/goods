@@ -20,6 +20,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import Image from 'next/image'
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import Link from 'next/link'
 
 type Item = {
   id: string
@@ -440,14 +441,16 @@ export function App() {
       <div className="hidden md:flex fixed top-0 left-0 h-full w-[240px] border-r bg-white flex-col justify-between p-6 shadow-sm">
         <div className="flex flex-col">
           <div className="flex justify-center mb-10">
-            <Image
-              src="/logo.svg"
-              alt="Goods Logo"
-              width={120}
-              height={36}
-              priority
-              className="h-auto"
-            />
+            <Link href="/">
+              <Image
+                src="/logo.svg"
+                alt="Goods Logo"
+                width={120}
+                height={36}
+                priority
+                className="h-auto"
+              />
+            </Link>
           </div>
         </div>
         
@@ -464,7 +467,7 @@ export function App() {
                 <span className="font-medium">{userData.name}</span>
                 <span className="text-sm text-gray-500">{userData.email}</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleSignOut} className="text-red-600 p-3">
+              <DropdownMenuItem onClick={handleSignOut} className="text-red-600 p-3 cursor-pointer">
                 <LogOut className="mr-2 h-4 w-4" />
                 Cerrar sesión
               </DropdownMenuItem>
@@ -478,14 +481,16 @@ export function App() {
         <div className="max-w-[1400px] w-full mx-auto">
           {/* Mobile Header */}
           <div className="md:hidden flex items-center justify-between py-4 mb-6">
-            <Image
-              src="/logo.svg"
-              alt="Goods Logo"
-              width={120}
-              height={36}
-              priority
-              className="h-auto"
-            />
+            <Link href="/">
+              <Image
+                src="/logo.svg"
+                alt="Goods Logo"
+                width={120}
+                height={36}
+                priority
+                className="h-auto"
+              />
+            </Link>
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="hover:bg-gray-100">
@@ -494,14 +499,16 @@ export function App() {
               </SheetTrigger>
               <SheetContent side="right" className="w-[240px] p-6 flex flex-col">
                 <div className="flex justify-center">
-                  <Image
-                    src="/logo.svg"
-                    alt="Goods Logo"
-                    width={100}
-                    height={30}
-                    priority
-                    className="h-auto mb-8"
-                  />
+                  <Link href="/">
+                    <Image
+                      src="/logo.svg"
+                      alt="Goods Logo"
+                      width={100}
+                      height={30}
+                      priority
+                      className="h-auto mb-8"
+                    />
+                  </Link>
                 </div>
                 
                 <div className="mt-auto">
