@@ -10,9 +10,9 @@ import { Box, Key, Sparkles } from "lucide-react"
 import { supabase } from '@/utils/supabase'
 
 const features = [
-  { icon: <Sparkles className="h-4 w-4" />, text: "Track your belongings" },
-  { icon: <Box className="h-4 w-4" />, text: "Organize by categories" },
-  { icon: <Key className="h-4 w-4" />, text: "Secure and private" },
+  { icon: <Sparkles className="h-4 w-4" />, text: "Rastrea tus pertenencias" },
+  { icon: <Box className="h-4 w-4" />, text: "Organiza por cajas" },
+  { icon: <Key className="h-4 w-4" />, text: "Seguro y privado" },
 ]
 
 export default function Component() {
@@ -90,51 +90,51 @@ export default function Component() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-3xl font-heading">{isLogin ? "Sign in" : "Sign up"}</CardTitle>
+          <CardTitle className="text-3xl font-heading">{isLogin ? "Iniciar sesión" : "Registrarse"}</CardTitle>
           <CardDescription>
             {isLogin
-              ? "Enter your email and password to access your inventory"
-              : "Create an account to start tracking your inventory"}
+              ? "Ingresa tu correo y contraseña para acceder a tu inventario"
+              : "Crea una cuenta para comenzar a rastrear tu inventario"}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             {!isLogin && (
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" name="name" placeholder="John Doe" required />
+                <Label htmlFor="name">Nombre</Label>
+                <Input id="name" name="name" placeholder="Juan Pérez" required />
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" placeholder="m@example.com" required type="email" />
+              <Label htmlFor="email">Correo electrónico</Label>
+              <Input id="email" name="email" placeholder="m@ejemplo.com" required type="email" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Contraseña</Label>
               <Input id="password" name="password" required type="password" />
             </div>
             {isLogin && (
               <div className="flex items-center space-x-2">
                 <Checkbox id="remember" />
-                <Label htmlFor="remember">Remember me</Label>
+                <Label htmlFor="remember">Recordarme</Label>
               </div>
             )}
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button className="w-full" disabled={isLoading}>
-              {isLoading ? "Cargando..." : (isLogin ? "Sign in" : "Sign up")}
+              {isLoading ? "Cargando..." : (isLogin ? "Iniciar sesión" : "Registrarse")}
             </Button>
             {error && (
               <p className="text-sm text-red-500 text-center">{error}</p>
             )}
             <div className="text-sm text-muted-foreground text-center">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+              {isLogin ? "¿No tienes una cuenta?" : "¿Ya tienes una cuenta?"}{" "}
               <button className="underline text-primary hover:text-primary/90" onClick={toggleForm}>
-                {isLogin ? "Sign up" : "Sign in"}
+                {isLogin ? "Regístrate" : "Inicia sesión"}
               </button>
             </div>
             <div className="border-t pt-4">
-              <h3 className="font-heading text-lg mb-2 text-center">Why use our app?</h3>
+              <h3 className="font-heading text-lg mb-2 text-center">¿Por qué usar nuestra aplicación?</h3>
               <ul className="space-y-2">
                 {features.map((feature, index) => (
                   <li key={index} className="flex items-center space-x-2">
