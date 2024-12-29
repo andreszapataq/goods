@@ -481,8 +481,8 @@ export function App() {
             <Image
               src="/logo.svg"
               alt="Goods Logo"
-              width={100}
-              height={30}
+              width={120}
+              height={36}
               priority
               className="h-auto"
             />
