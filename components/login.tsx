@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Box, Key, Sparkles } from "lucide-react"
+import { Box, Eye, EyeOff, Key, Sparkles } from "lucide-react"
 import { supabase } from '@/utils/supabase'
 
 const features = [
@@ -19,6 +19,7 @@ export default function Component() {
   const [isLogin, setIsLogin] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   const toggleForm = () => setIsLogin(!isLogin)
 
@@ -111,7 +112,25 @@ export default function Component() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Contraseña</Label>
-              <Input id="password" name="password" required type="password" />
+              <div className="relative">
+                <Input 
+                  id="password" 
+                  name="password" 
+                  required 
+                  type={showPassword ? "text" : "password"}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
             {isLogin && (
               <div className="flex items-center space-x-2">
