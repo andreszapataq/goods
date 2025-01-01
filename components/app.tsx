@@ -928,20 +928,33 @@ export function App() {
                               )}
                             </div>
                           ) : (
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <span className="font-semibold">{item.name}</span>
-                                <br />
-                                <span className="text-sm text-gray-500">{item.description}</span>
+                            <div className="flex items-start justify-between">
+                              <div className="min-w-0 flex-1 mr-2">
+                                <span className="font-semibold line-clamp-2 block">
+                                  {item.name}
+                                </span>
+                                <span className="text-sm text-gray-500 line-clamp-2 block">
+                                  {item.description}
+                                </span>
                               </div>
-                              <div>
-                                <Button onClick={() => startEditing(item)} variant="ghost" size="sm" className="mr-1 hover:bg-electric-blue">
+                              <div className="flex-shrink-0">
+                                <Button 
+                                  onClick={() => startEditing(item)} 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="mr-1 hover:bg-electric-blue"
+                                >
                                   <Edit2 className="h-4 w-4" />
                                 </Button>
-                                <Button onClick={() => {
-                                  setItemToDelete(item)
-                                  setIsDeleteItemDialogOpen(true)
-                                }} variant="ghost" size="sm" className='hover:bg-electric-blue'>
+                                <Button 
+                                  onClick={() => {
+                                    setItemToDelete(item)
+                                    setIsDeleteItemDialogOpen(true)
+                                  }} 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className='hover:bg-electric-blue'
+                                >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                               </div>
