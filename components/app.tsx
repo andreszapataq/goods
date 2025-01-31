@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { PlusCircle, Edit2, Check, X, Trash2, AlertCircle, Search, LogOut, User as UserIcon, Box, Menu } from "lucide-react"
+import { PlusCircle, Edit2, Check, X, Trash2, AlertCircle, Search, LogOut, User as UserIcon, Box, Menu, ArrowDownAZ, CalendarDays } from "lucide-react"
 import { supabase } from "@/utils/supabase" // Importar el cliente de Supabase
 import { useRouter } from 'next/navigation'
 import { User } from '@supabase/supabase-js'  // Añadir esta importación al inicio
@@ -657,6 +657,7 @@ export function App() {
                 }} 
                 className={`${sortOrder === 'alphabetical' ? 'underline font-medium' : ''} text-sm sm:text-base`}
               >
+                <ArrowDownAZ className="h-4 w-4 mr-2" />
                 Ordenar Alfabéticamente
               </Button>
               <Button 
@@ -667,6 +668,7 @@ export function App() {
                 }} 
                 className={`${sortOrder === 'date' ? 'underline font-medium' : ''} text-sm sm:text-base`}
               >
+                <CalendarDays className="h-4 w-4 mr-2" />
                 Ordenar por Fecha de Creación
               </Button>
             </div>
