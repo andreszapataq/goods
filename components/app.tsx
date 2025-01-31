@@ -15,12 +15,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
 import Image from 'next/image'
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import Link from 'next/link'
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 
 type Item = {
   id: string
@@ -437,8 +438,8 @@ export function App() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Desktop Sidebar - ahora fixed */}
-      <div className="hidden md:flex fixed top-0 left-0 h-full w-[240px] border-r bg-white flex-col justify-between p-6 shadow-sm">
+      {/* Desktop Sidebar */}
+      <div className="hidden xl:flex fixed top-0 left-0 h-full w-[240px] border-r bg-white flex-col justify-between p-6 shadow-sm">
         <div className="flex flex-col">
           <div className="flex justify-center mb-10">
             <Link href="/">
@@ -476,11 +477,11 @@ export function App() {
         </div>
       </div>
 
-      {/* Main Content - ajustado con padding y márgenes */}
-      <div className="flex-1 flex flex-col h-screen px-4 sm:px-6 md:px-8 md:pl-[264px] py-6">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col h-screen px-4 sm:px-6 xl:px-8 xl:pl-[264px] py-6">
         <div className="max-w-[1400px] w-full mx-auto">
           {/* Mobile Header */}
-          <div className="md:hidden flex items-center justify-between py-4 mb-6">
+          <div className="xl:hidden flex items-center justify-between py-4 mb-6">
             <Link href="/">
               <Image
                 src="/logo.svg"
@@ -498,6 +499,12 @@ export function App() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[240px] p-6 flex flex-col">
+                <VisuallyHidden>
+                  <DialogTitle>Menú de navegación</DialogTitle>
+                  <DialogDescription>
+                    Menú principal de navegación de la aplicación
+                  </DialogDescription>
+                </VisuallyHidden>
                 <div className="flex justify-center">
                   <Link href="/">
                     <Image
